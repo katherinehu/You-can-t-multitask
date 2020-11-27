@@ -105,26 +105,26 @@ public class RetrieveData extends AppCompatActivity {
                 //endregion
 
                 //regionCombine all pages into one JSONObject -P
-                for (String page : remainingPages) {
-                    JSONObject currentAuctionAllData = null;
-                    try {
-                        currentAuctionAllData = new JSONObject(page);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    JSONArray allAuctionsSoFar;
-                    JSONArray justAuctionsFromCurrentPage;
-                    JSONArray combined;
-                    try {
-                        allAuctionsSoFar = auctionInfo.getJSONArray("auctions");
-                        justAuctionsFromCurrentPage = currentAuctionAllData.getJSONArray("auctions");
-                        combined = concatArray(allAuctionsSoFar,justAuctionsFromCurrentPage);
-                        auctionInfo.put("auctions",combined);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
+//                for (String page : remainingPages) {
+//                    JSONObject currentAuctionAllData = null;
+//                    try {
+//                        currentAuctionAllData = new JSONObject(page);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    JSONArray allAuctionsSoFar;
+//                    JSONArray justAuctionsFromCurrentPage;
+//                    JSONArray combined;
+//                    try {
+//                        allAuctionsSoFar = auctionInfo.getJSONArray("auctions");
+//                        justAuctionsFromCurrentPage = currentAuctionAllData.getJSONArray("auctions");
+//                        combined = concatArray(allAuctionsSoFar,justAuctionsFromCurrentPage);
+//                        auctionInfo.put("auctions",combined);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
                 //endregion
 
 
@@ -139,25 +139,36 @@ public class RetrieveData extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                //regionClear large stuff from earlier because app will actually run out of memory
-                remainingPages.clear();
-                //endregion
-
                 if (timeUpdatedLast != timeUpdated) {
                     //The server has updated since data retrieval has begun, give user option to try again.
                     new ShowFailureButtons().execute();
+                    SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = data.edit();
+                    String storeAuctionInfo = auctionInfo.toString();
+                    editor.putInt("currentAuctionPages",totalPages);
+                    editor.putString("currentAuctionData0",storeAuctionInfo);
+                    for (int i = 0;i<totalPages;++i){
+                        String storeAdditionalInfo = remainingPages.get(i);
+                        editor.putString("currentAuctionData" + (i + 1),storeAdditionalInfo);
+                    }
+                    editor.apply();
                 } else {
                     //If no problems found, go back to the auction menu page.
 
                     //regionStore the information in sharedPreferences for easy later access
-                    String storeAuctionInfo = auctionInfo.toString();
                     SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                     SharedPreferences.Editor editor = data.edit();
-                    editor.putString("currentAuctionData",storeAuctionInfo);
+                    String storeAuctionInfo = auctionInfo.toString();
+                    editor.putInt("currentAuctionPages",totalPages);
+                    editor.putString("currentAuctionData0",storeAuctionInfo);
+                    for (int i = 0;i<totalPages;++i){
+                        String storeAdditionalInfo = remainingPages.get(i);
+                        editor.putString("currentAuctionData" + (i + 1),storeAdditionalInfo);
+                    }
                     editor.apply();
                     //endregion
 
-                    Toast.makeText(getApplicationContext(),"All data retrieved.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"All data successfully retrieved.",Toast.LENGTH_SHORT).show();
                     Intent goBack = new Intent(getApplicationContext(),AuctionMainMenu.class);
                     startActivity(goBack);
                 }
