@@ -142,6 +142,7 @@ public class RetrieveData extends AppCompatActivity {
                 if (timeUpdatedLast != timeUpdated) {
                     //The server has updated since data retrieval has begun, give user option to try again.
                     new ShowFailureButtons().execute();
+                    Toast.makeText(getApplicationContext(),"Data retrieval issue.",Toast.LENGTH_SHORT).show();
                     SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                     SharedPreferences.Editor editor = data.edit();
                     String storeAuctionInfo = auctionInfo.toString();
