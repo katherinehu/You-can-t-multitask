@@ -2,14 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wave.sbauction">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MultiTaskGame"></activity>
+        <activity android:name=".RetrieveData"></activity>
+        <activity android:name=".MultiTaskGame" />
         <activity android:name=".MultiTaskMainMenu" />
         <activity android:name=".AuctionMainMenu" />
         <activity android:name=".Welcome" />
