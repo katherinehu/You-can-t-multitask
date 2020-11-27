@@ -1,7 +1,5 @@
 package com.wave.sbauction;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,7 +12,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
+import androidx.appcompat.app.AppCompatActivity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -246,8 +245,22 @@ public class RetrieveData extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            String loadingNotification = "Be patient while your phone gets ALL the auction data.\nLoaded " + currentPage + " of " + totalAuctions + " total auctions.";
-            tvLoading.setText(loadingNotification);
+            try{
+                int currentlyLoaded = Integer.parseInt(currentPage);
+                int total = Integer.parseInt(totalAuctions);
+                if (total - currentlyLoaded > 1000) {
+                    String loadingNotification = "Be patient while your phone gets ALL the auction data.\nLoaded " + currentPage + " of " + totalAuctions + " total auctions.";
+                    tvLoading.setText(loadingNotification);
+                } else {
+                    String loadingNotification = "Be patient while your phone gets ALL the auction data.\nLoaded " + totalAuctions + " of " + totalAuctions + " total auctions." +
+                            "\nYour phone is now saving the data. If you see this message for long your phone is really really slow.\n" +
+                            "Worry not, you will be redirected back to the app quite soon where you can run fancy analysis.";
+                    tvLoading.setText(loadingNotification);
+                }
+            } catch(Exception e) {
+                String loadingNotification = "Establishing contact with Hypixel API...";
+                tvLoading.setText(loadingNotification);
+            }
         }
     }
 
