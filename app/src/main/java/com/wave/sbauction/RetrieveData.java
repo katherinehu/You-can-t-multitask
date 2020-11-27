@@ -2,6 +2,7 @@ package com.wave.sbauction;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -18,6 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,7 +63,7 @@ public class RetrieveData extends AppCompatActivity {
                 final String auctionURL = "https://api.hypixel.net/skyblock/auctions?page=";
                 String firstPage = null;
                 try {
-                    firstPage = new RetrieveAuctions().execute(auctionURL + "0", "1", "?").get();
+                    firstPage = new RetrieveAuctions().execute(auctionURL + "0", "0", "(waiting for Hypixel to say exactly how many)").get();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -83,57 +86,54 @@ public class RetrieveData extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                //Store the data
+                SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor editor = data.edit();
+                String storeAuctionInfo = auctionInfo.toString();
+                editor.putInt("totalAuctionPages",totalPages);
+                editor.apply();
+
+                String filename = "auctionPage0";
+                saveData(filename,firstPage);
                 //endregion
 
                 //regionRetrieve the remaining pages -P
-                //Place to put the rest of the pages
+                //Place to put the last page, since we'll use it later
+                String lastPageString = null;
                 ArrayList<String> remainingPages = new ArrayList<>();
 
                 //Starts at 1, because we already retrieved the 0 page as the first page.
                 //Also, I checked, and you do need to retrieve the 52nd page if there are say, 52 pages.
                 for (int i = 1; i <= totalPages; ++i) {
-                    String newPage = null;
                     try {
-                        newPage = new RetrieveAuctions().execute(auctionURL + i, Integer.toString(i*1000), totalAuctions).get();
+                        final String newPage = new RetrieveAuctions().execute(auctionURL + i, Integer.toString(i*1000), totalAuctions).get();
+                        //Store the data
+                        final String filename2 = "auctionPage" + i;
+                        new Thread(){
+                            @Override
+                            public void run() {
+                                super.run();
+                                saveData(filename2, newPage);
+                            }
+                        }.start();
+                        //Save the last page to check if the times match up
+                        if(i == totalPages) {
+                            lastPageString = newPage;
+                        }
                     } catch (ExecutionException e) {
                         e.printStackTrace();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    remainingPages.add(newPage);
                 }
                 //endregion
 
-                //regionCombine all pages into one JSONObject -P
-//                for (String page : remainingPages) {
-//                    JSONObject currentAuctionAllData = null;
-//                    try {
-//                        currentAuctionAllData = new JSONObject(page);
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    JSONArray allAuctionsSoFar;
-//                    JSONArray justAuctionsFromCurrentPage;
-//                    JSONArray combined;
-//                    try {
-//                        allAuctionsSoFar = auctionInfo.getJSONArray("auctions");
-//                        justAuctionsFromCurrentPage = currentAuctionAllData.getJSONArray("auctions");
-//                        combined = concatArray(allAuctionsSoFar,justAuctionsFromCurrentPage);
-//                        auctionInfo.put("auctions",combined);
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-                //endregion
-
-
                 //regionCheck to make sure data hasn't changed -P
-                JSONObject lastPage = null;
+                JSONObject lastPage;
                 long timeUpdatedLast = 0;
                 try {
                     //Get information from the last page of auction data, check to see if the time is the same
-                    lastPage = new JSONObject(remainingPages.get(remainingPages.size()-1));
+                    lastPage = new JSONObject(lastPageString);
                     timeUpdatedLast = lastPage.getLong("lastUpdated");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -143,32 +143,8 @@ public class RetrieveData extends AppCompatActivity {
                     //The server has updated since data retrieval has begun, give user option to try again.
                     new ShowFailureButtons().execute();
                     Toast.makeText(getApplicationContext(),"Data retrieval issue.",Toast.LENGTH_SHORT).show();
-                    SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    SharedPreferences.Editor editor = data.edit();
-                    String storeAuctionInfo = auctionInfo.toString();
-                    editor.putInt("currentAuctionPages",totalPages);
-                    editor.putString("currentAuctionData0",storeAuctionInfo);
-                    for (int i = 0;i<totalPages;++i){
-                        String storeAdditionalInfo = remainingPages.get(i);
-                        editor.putString("currentAuctionData" + (i + 1),storeAdditionalInfo);
-                    }
-                    editor.apply();
                 } else {
                     //If no problems found, go back to the auction menu page.
-
-                    //regionStore the information in sharedPreferences for easy later access
-                    SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    SharedPreferences.Editor editor = data.edit();
-                    String storeAuctionInfo = auctionInfo.toString();
-                    editor.putInt("currentAuctionPages",totalPages);
-                    editor.putString("currentAuctionData0",storeAuctionInfo);
-                    for (int i = 0;i<totalPages;++i){
-                        String storeAdditionalInfo = remainingPages.get(i);
-                        editor.putString("currentAuctionData" + (i + 1),storeAdditionalInfo);
-                    }
-                    editor.apply();
-                    //endregion
-
                     Toast.makeText(getApplicationContext(),"All data successfully retrieved.",Toast.LENGTH_SHORT).show();
                     Intent goBack = new Intent(getApplicationContext(),AuctionMainMenu.class);
                     startActivity(goBack);
@@ -202,17 +178,25 @@ public class RetrieveData extends AppCompatActivity {
         //endregion
     }
 
-    //Put JSONArrays together, found this online
-    //https://stackoverflow.com/questions/4590753/concatenate-jsonarrays
-    private JSONArray concatArray(JSONArray... arrs)
-            throws JSONException {
-        JSONArray result = new JSONArray();
-        for (JSONArray arr : arrs) {
-            for (int i = 0; i < arr.length(); i++) {
-                result.put(arr.get(i));
+    //Save files on the device -P
+    public void saveData(String filename,String dataToSave) {
+        FileOutputStream fos = null;
+        try {
+            fos = openFileOutput(filename, Context.MODE_PRIVATE);
+            fos.write(dataToSave.getBytes());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos!= null){
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
-        return result;
     }
 
     //This code was mostly taken from online, I looked up how to retrieve text from a URL. The API that
