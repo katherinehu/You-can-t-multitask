@@ -9,9 +9,12 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,9 +25,12 @@ import java.util.Random;
 
 import android.graphics.Color;
 
+import androidx.annotation.RequiresApi;
+
 /*
 Here, we have the entire game, which will prove to the humans that their multitasking ability is nonexistent.
  */
+@RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
 public class MultiTaskGame extends Activity implements SensorEventListener {
 
     private SensorManager sensorManager;
@@ -43,6 +49,21 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
     ImageView ivUpDown;
 
     TextView tv_randWord;
+    Button btn_green;
+    Button btn_blue;
+    Button btn_red;
+    Button btn_orange;
+    Button btn_purple;
+    Button btn_yellow;
+    ProgressBar pbColor;
+
+    boolean clicked_green = false;
+    boolean clicked_blue = false;
+    boolean clicked_red = false;
+    boolean clicked_orange = false;
+    boolean clicked_purple = false;
+    boolean clicked_yellow = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,17 +77,28 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         ivUpDown = findViewById(R.id.ivUpDown);
 
         tv_randWord = findViewById(R.id.tv_randWord);
+        btn_blue = (Button)findViewById(R.id.btn_blue);
+        btn_green = (Button)findViewById(R.id.btn_green);
+        btn_red = (Button)findViewById(R.id.btn_red);
+        btn_orange = (Button)findViewById(R.id.btn_orange);
+        btn_purple = (Button)findViewById(R.id.btn_purple);
+        btn_yellow = (Button)findViewById(R.id.btn_yellow);
+        pbColor = findViewById(R.id.pbColor);
+
+
         //endregion
 
         //regionDetermine which games to play
         SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final SharedPreferences.Editor editor = data.edit();
         final boolean tiltDisabled = data.getBoolean("tiltDisabled",false);
-        boolean mathDisabled = data.getBoolean("mathDisabled",false);
-        boolean colorDisabled = data.getBoolean("colorDisabled",false);
-        boolean timerDisabled = data.getBoolean("timerDisabled",false);
-        boolean barsDisabled = data.getBoolean("barsDisabled",false);
+        final boolean mathDisabled = data.getBoolean("mathDisabled",false);
+        final boolean colorDisabled = data.getBoolean("colorDisabled",false);
+        final boolean timerDisabled = data.getBoolean("timerDisabled",false);
+        final boolean barsDisabled = data.getBoolean("barsDisabled",false);
         //endregion
+
+
 
         //regionSet up a timer so the user knows how long they've survived. -P
         new Thread(){
@@ -210,63 +242,208 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
 
 
         //region Color confusion -k
-        //regionFirst game, tilt the phone to the specified tilts before time runs out -P
+
         new Thread() {
             @Override
             public void run() {
                 int max = 6;
                 int min = 1;
-                int random_int = (int)(Math.random() * (max - min + 1) + min);
-                int random_int2 = (int)(Math.random() * (max - min + 1) + min);
+                int timeGiven = RandRange(3,9);
+                long timeStart = System.currentTimeMillis();
 
-                switch(random_int2) {
-                    case 1:
-                        tv_randWord.setTextColor(Color.RED);
-                        break;
-                    case 2:
-                        tv_randWord.setTextColor(Color.YELLOW);
-                        break;
-                    case 3:
-                        tv_randWord.setTextColor(Color.BLUE);
-                        break;
-                    case 4:
-                        tv_randWord.setTextColor(Color.GREEN);
-                        break;
-                    case 5:
-                        tv_randWord.setTextColor(Color.parseColor("#800080"));
-                        break;
-                    case 6:
-                        tv_randWord.setTextColor(Color.parseColor("#FFA500"));
-                        break;
-                    default:
-                        tv_randWord.setTextColor(Color.WHITE);
-                }
+                int randTextColor = (int)(Math.random() * (max - min + 1) + min);
+                int randTextValue = (int)(Math.random() * (max - min + 1) + min);
+                while (!lostGame && !colorDisabled ) {
+                    switch(randTextColor) {
+                        case 1:
+                            tv_randWord.setTextColor(Color.RED);
+                            tv_randWord.setContentDescription("1");
+                            break;
+                        case 2:
+                            tv_randWord.setTextColor(Color.parseColor("#FFA500"));
+                            tv_randWord.setContentDescription("2");
+                            break;
+                        case 3:
+                            tv_randWord.setTextColor(Color.YELLOW);
+                            tv_randWord.setContentDescription("3");
+                            break;
+                        case 4:
+                            tv_randWord.setTextColor(Color.GREEN);
+                            tv_randWord.setContentDescription("4");
+                            break;
+                        case 5:
+                            tv_randWord.setTextColor(Color.BLUE);
+                            tv_randWord.setContentDescription("5");
+                            break;
+                        case 6:
+                            tv_randWord.setTextColor(Color.parseColor("#800080"));
+                            tv_randWord.setContentDescription("6");
+                            break;
+                        default:
+                            tv_randWord.setTextColor(Color.WHITE);
+                    }
 
-                switch(random_int) {
-                    case 1:
-                        tv_randWord.setText("RED");
-                        break;
-                    case 2:
-                        tv_randWord.setText("YELLOW");
-                        break;
-                    case 3:
-                        tv_randWord.setText("BLUE");
-                        break;
-                    case 4:
-                        tv_randWord.setText("GREEN");
-                        break;
-                    case 5:
-                        tv_randWord.setText("PURPLE");
-                        break;
-                    case 6:
-                        tv_randWord.setText("ORANGE");
-                        break;
-                    default:
-                        tv_randWord.setTextColor(Color.WHITE);
+                    switch(randTextValue) {
+                        case 1:
+                            tv_randWord.setText("RED");
+                            tv_randWord.setContentDescription("1");
+                            break;
+                        case 2:
+                            tv_randWord.setText("ORANGE");
+                            tv_randWord.setContentDescription("2");
+                            break;
+                        case 3:
+                            tv_randWord.setText("YELLOW");
+                            tv_randWord.setContentDescription("3");
+                            break;
+                        case 4:
+                            tv_randWord.setText("GREEN");
+                            tv_randWord.setContentDescription("4");
+                            break;
+                        case 5:
+                            tv_randWord.setText("BLUE");
+                            tv_randWord.setContentDescription("5");
+                            break;
+                        case 6:
+                            tv_randWord.setText("PURPLE");
+                            tv_randWord.setContentDescription("6");
+                            break;
+                        default:
+                            tv_randWord.setTextColor(Color.WHITE);
+                    }
+
+                    //Decrement the timer, and show the user that has happened, through the progress bar
+                    double timePassed = (double)(System.currentTimeMillis()-timeStart)/1000;
+                    double timeRemaining = (double)timeGiven - timePassed;
+                    int newProgress = (int)((timeRemaining/(double)timeGiven)*100);
+                    pbColor.setProgress(newProgress);
+                    //If the user is out of time, lose the game
+                    if (timeRemaining < 0) {
+                        lostGame = true;
+                    }
+                    //Give the system a chance to catch up
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
+            }
+
+
             }.start();
         //endregion
+
+        //onclick listener for color buttons
+        //check to see if buttons have been clicked
+        btn_red.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAllToFalse();
+                clicked_red = true;
+                if (tv_randWord.getContentDescription() == (btn_red.getContentDescription())){
+                    btn_red.setText("✓");
+                    pbColor.setProgress(100);
+                }
+                else{
+                    btn_red.setText("×");
+                    lostGame = true;
+                }
+
+            }
+        });
+        btn_orange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAllToFalse();
+                clicked_orange = true;
+                if (tv_randWord.getContentDescription() == (btn_orange.getContentDescription())){
+                    btn_orange.setText("✓");
+                    pbColor.setProgress(100);
+                }
+                else{
+                    btn_orange.setText("×");
+                    lostGame = true;
+
+                }
+            }
+        });
+        btn_yellow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAllToFalse();
+                clicked_yellow = true;
+                if (tv_randWord.getContentDescription() == (btn_yellow.getContentDescription())){
+                    btn_yellow.setText("✓");
+                    pbColor.setProgress(100);
+                }
+                else{
+                    btn_yellow.setText("×");
+                    lostGame = true;
+
+                }
+            }
+        });
+        btn_green.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAllToFalse();
+                clicked_green = true;
+                if (tv_randWord.getContentDescription() == (btn_green.getContentDescription())){
+                    btn_green.setText("✓");
+                    pbColor.setProgress(100);
+                }
+                else{
+                    btn_green.setText("×");
+                    lostGame = true;
+
+                }
+            }
+        });
+        btn_blue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAllToFalse();
+                clicked_blue = true;
+                if (tv_randWord.getContentDescription() == (btn_blue.getContentDescription())){
+                    btn_blue.setText("✓");
+                    pbColor.setProgress(100);
+                }
+                else{
+                    btn_blue.setText("×");
+                    lostGame = true;
+
+                }
+            }
+        });
+        btn_purple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAllToFalse();
+                clicked_purple = true;
+                if (tv_randWord.getContentDescription() == (btn_purple.getContentDescription())) {
+                    btn_purple.setText("✓");
+                    pbColor.setProgress(100);
+                }
+                else{
+                    btn_purple.setText("×");
+                    lostGame = true;
+
+                }
+            }
+        });
+
+    }
+
+
+    //set all color boolean vals to be false
+    public void setAllToFalse() {
+        boolean clicked_green = false;
+        boolean clicked_blue = false;
+        boolean clicked_red = false;
+        boolean clicked_orange = false;
+        boolean clicked_purple = false;
+        boolean clicked_yellow = false;
 
     }
 
