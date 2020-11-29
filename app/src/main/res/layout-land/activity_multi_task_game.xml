@@ -11,28 +11,36 @@
         android:id="@+id/btn_green"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
         android:background="#4CAF50"
         android:text="Green"
-        tools:layout_editor_absoluteX="303dp"
-        tools:layout_editor_absoluteY="347dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_blue"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_yellow" />
 
     <Button
         android:id="@+id/btn_orange"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
         android:background="#FF9800"
         android:text="Orange"
-        tools:layout_editor_absoluteX="358dp"
-        tools:layout_editor_absoluteY="347dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_yellow"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_red" />
 
     <Button
         android:id="@+id/btn_purple"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
         android:background="#673AB7"
         android:text="Purple"
-        tools:layout_editor_absoluteX="248dp"
-        tools:layout_editor_absoluteY="347dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toEndOf="@+id/btn_blue" />
 
     <ProgressBar
         android:id="@+id/pbBar2"
@@ -253,50 +261,66 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="WORD"
-        tools:layout_editor_absoluteX="85dp"
-        tools:layout_editor_absoluteY="253dp" />
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/tv_randWord"
-        android:layout_width="3dp"
-        android:layout_height="61dp"
-        android:textSize="25dp"
-        tools:layout_editor_absoluteX="85dp"
-        tools:layout_editor_absoluteY="286dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PURPLE"
+        android:textSize="14dp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline4" />
 
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="150dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="45dp"
-        tools:layout_editor_absoluteY="375dp" />
+        android:layout_marginStart="64dp"
+        android:layout_marginEnd="64dp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_yellow"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_randWord" />
 
     <Button
         android:id="@+id/btn_red"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
         android:background="#F44336"
         android:text="Red"
-        tools:layout_editor_absoluteX="248dp"
-        tools:layout_editor_absoluteY="291dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_orange"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_yellow"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
         android:background="#FFEB3B"
         android:text="Yellow"
-        tools:layout_editor_absoluteX="303dp"
-        tools:layout_editor_absoluteY="291dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_green"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_orange" />
 
     <Button
         android:id="@+id/btn_blue"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
         android:background="#03A9F4"
         android:text="Blue"
-        tools:layout_editor_absoluteX="358dp"
-        tools:layout_editor_absoluteY="291dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_purple"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_green" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

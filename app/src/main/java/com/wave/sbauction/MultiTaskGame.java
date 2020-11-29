@@ -211,7 +211,6 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
 
         //region Color confusion -k
         //regionFirst game, tilt the phone to the specified tilts before time runs out -P
-
         new Thread() {
             @Override
             public void run() {
@@ -241,6 +240,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                         break;
                     default:
                         tv_randWord.setTextColor(Color.WHITE);
+                }
 
                 switch(random_int) {
                     case 1:
@@ -263,37 +263,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                         break;
                     default:
                         tv_randWord.setTextColor(Color.WHITE);
-
-
-
-                    //Check to see if the user has solved the puzzle, if so, reset the timer, and give
-                    //the player a quick break from this challenge. The break is mostly so they see two check marks, and know they did it right
-                    if (rightImageCurrent.equals("check") && leftImageCurrent.equals("check")){
-                        timeGiven = RandRange(8,14);
-                        timeStart = System.currentTimeMillis();
-                        xRequirement = RandRange(-5,5);
-                        yRequirement = RandRange(-5,5);
-                        pbTilt.setProgress(100);
-                    }
-
-                    //Decrement the timer, and show the user that has happened, through the progress bar
-                    double timePassed = (double)(System.currentTimeMillis()-timeStart)/1000;
-                    double timeRemaining = (double)timeGiven - timePassed;
-                    int newProgress = (int)((timeRemaining/(double)timeGiven)*100);
-                    pbTilt.setProgress(newProgress);
-                    //If the user is out of time, lose the game
-                    if (timeRemaining < 0) {
-                        lostGame = true;
-                    }
-                    //Give the system a chance to catch up
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
                 }
-            }
-        }.start();
+            }.start();
         //endregion
 
     }
