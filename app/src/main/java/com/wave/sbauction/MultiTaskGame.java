@@ -359,16 +359,6 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                             }
                         });
 
-                        //Give the user a break if they managed to complete the challenge
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        //How much time is normally given to do this task
-                        timeGivenColor = RandRange(3,9);
-                        timeStart[0] = System.currentTimeMillis();
                         //Choose if the player will have to pick based on text, or color next time
                         boolean chooseText = new Random().nextBoolean();
                         if (chooseText) {
@@ -389,6 +379,19 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                                 }
                             });
                         }
+
+                        //Give the user a break if they managed to complete the challenge
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        //How much time is normally given to do this task
+                        timeGivenColor = RandRange(3,9);
+                        timeStart[0] = System.currentTimeMillis();
+
+                        colorCompleted = false;
                     }
                 };
                 //endregion
@@ -398,32 +401,24 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                     //Check if user has won this time around
                     if (colorCompleted) {
                         resetColor.run();
-                        //Synchronize this thread with the other, and give it an extra 50 milliseconds
-                        //to minimize the chance of a race condition
+                    } else {
+                        //Decrement the timer, and show the user that has happened, through the progress bar
+                        double timePassed = (double) (System.currentTimeMillis() - timeStart[0]) / 1000;
+                        double timeRemaining = (double) timeGivenColor - timePassed;
+                        int newProgress = (int) ((timeRemaining / (double) timeGivenColor) * 100);
+                        pbColor.setProgress(newProgress);
+
+                        //If the user is out of time, lose the game
+                        if (timeRemaining < 0) {
+                            lostGame = true;
+                        }
+
+                        //Take a quick break, so the thread isn't as resource intensive
                         try {
-                            Thread.sleep(1050);
+                            Thread.sleep(16);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        colorCompleted = false;
-                    }
-
-                    //Decrement the timer, and show the user that has happened, through the progress bar
-                    double timePassed = (double)(System.currentTimeMillis()- timeStart[0])/1000;
-                    double timeRemaining = (double)timeGivenColor - timePassed;
-                    int newProgress = (int)((timeRemaining/(double)timeGivenColor)*100);
-                    pbColor.setProgress(newProgress);
-
-                    //If the user is out of time, lose the game
-                    if (timeRemaining < 0) {
-                        lostGame = true;
-                    }
-
-                    //Take a quick break, so the thread isn't as resource intensive
-                    try {
-                        Thread.sleep(16);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
                 }
             }

@@ -271,7 +271,7 @@
         android:id="@+id/tv_colorConfused"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="WORD"
+        android:text="Loading"
         android:textColor="#FFFFFFFF"
         android:textSize="24dp"
         android:textStyle="bold"
