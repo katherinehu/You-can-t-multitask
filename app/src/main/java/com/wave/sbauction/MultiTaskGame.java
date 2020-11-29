@@ -1,30 +1,22 @@
 package com.wave.sbauction;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.SystemClock;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /*
 Here, we have the entire game, which will prove to the humans that their multitasking ability is nonexistent.
@@ -42,7 +34,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
     static double timeElapsed = 0;
 
     TextView tvTimer;
-    ImageView ivBallGame;
+    ProgressBar pbTilt;
+    ImageView ivLeftRight;
+    ImageView ivUpDown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +45,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
 
         //regionDeclare UI elements
         tvTimer = findViewById(R.id.tvTimer);
-        ivBallGame = findViewById(R.id.ivBallGame);
+        pbTilt = findViewById(R.id.pbTilt);
+        ivLeftRight = findViewById(R.id.ivLeftRight);
+        ivUpDown = findViewById(R.id.ivUpDown);
         //endregion
 
         //regionSet up a timer so the user knows how long they've survived. -P
@@ -76,86 +72,116 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         }.start();
         //endregion
 
-        //regionFirst game, keep the ball inside the box -P
+        //regionFirst game, tilt the phone to the specified tilts before time runs out -P
         //Setup accelerometer so game can be controlled
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         new Thread() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void run() {
-                //Get an image of what the playing field looks like
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inScaled = false;
-                Bitmap firstMap = BitmapFactory.decodeResource(getResources(),R.drawable.canvas,options);
-                int h = firstMap.getHeight();
-                int w = firstMap.getWidth();
-                int [] canvasPixels = new int[h*w];
-                firstMap.getPixels(canvasPixels,0,w,0,0,w,h);
-                //The color of the background, for reference, stored here
-                int baseColor = canvasPixels[1];
-
-                //Velocity of the ball is stored here, which is used to adjust the position
-                //of the ball until it is no longer on the screen, at which point the player fails
-                //this particular challenge. Starts off at a random value to keep things interesting.
-                double xVelocity = 0;//ThreadLocalRandom.current().nextDouble(-10,10);
-                double yVelocity = 0;//ThreadLocalRandom.current().nextDouble(-10,10);
-                //How much position had changed since the start of the game
-                double xPosition = 0;
-                double yPosition = 0;
-                //Set how fast this game will refresh, also use that time for physics calculations
-                int refreshMilliseconds = 500;
-                //Make all the movements less dramatic so the user actually has time to react, this is adjusted until the game runs reasonably
-                double scalingFactor = 1;
-
+                int xRequirement = RandRange(-5,5);
+                int yRequirement = RandRange(-5,5);
+                int timeGiven = RandRange(8,14);
+                long timeStart = System.currentTimeMillis();
+                pbTilt.setProgress(100);
+                //They will get changed to names of images, and only changed when there's a change, to
+                //reduce the system load                                            //possibilities below
+                String leftImage = "something different so it fills";                //check, left, right
+                String rightImage = "this with something, this is just temporary";   //check, up, down
+                //Determines if the player gets a break from this activitiy this loop
+                boolean getBreak = false;
                 while(!lostGame){
-                    //Locate where the ball is in the canvas
-                    ArrayList<Integer> ballLocations = new ArrayList<>();
-                    for (int i = 0; i < h * w; ++i) {
-                        if (canvasPixels[i] == Color.RED) {
-                            ballLocations.add(i);
-                            Log.d("ballLocation",Integer.toString(i));
-                            //Set to the base color, so that that the position of the ball can be updated.
-                            canvasPixels[i] = baseColor;
-                        }
-                    }
-                    //Calculate new ball velocity
-//                    xVelocity += yAcceleration*yAcceleration*((double)refreshMilliseconds/1000) / scalingFactor * 0.1;
-//                    yVelocity -= xAcceleration*xAcceleration*((double)refreshMilliseconds/1000) / scalingFactor * 0.1;
-                    //Calculate new ball position
-                    xPosition += yAcceleration*((double)refreshMilliseconds/1000) / scalingFactor;
-                    yPosition += xAcceleration*((double)refreshMilliseconds/1000) / scalingFactor;
-
-                    //Store where the ball will be now.
-                    ArrayList<Integer> newBallLocations = new ArrayList<>();
-                    for(int locations:ballLocations){
-                        //Check to see if it went out the left or right bound.
-                        int currentRow = locations % w;
-                        if ((currentRow + (int)xPosition) > w || (currentRow + (int)xPosition) < 0){
-                            lostGame = true;
-                            break;
-                        }
-                        newBallLocations.add(locations + (int)xPosition + w * (int)yPosition);
-                    }
-
-                    //Try to update the image, if it doesn't work, that means player has failed game
-                    for(int locations:newBallLocations) {
+                    //If the player has completed the challenge, give them a moment
+                    if (getBreak) {
                         try {
-                            canvasPixels[locations] = Color.RED;
-                        } catch (Exception e) {
-                            //This means out of bounds, and the player has failed the game
-                            lostGame = true;
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                     }
+                    //On the chance the user was given a break, revoke it once it happens.
+                    getBreak = false;
 
-                    //If the above worked, update the image
-                    if (!lostGame) {
-                        ivBallGame.setImageBitmap(Bitmap.createBitmap(canvasPixels, w, h, Bitmap.Config.ARGB_8888));
+                    //Figure out how the phone is currently positioned
+                    int userX = (int)Round(yAcceleration,0);
+                    int userY = (int)Round(xAcceleration,0);
+
+                    //Based on where the phone is, determine if the arrows need changing
+                    final String leftImageCurrent;
+                    if (userX > xRequirement) {
+                        leftImageCurrent = "left";
+                    } else if (userX < xRequirement) {
+                        leftImageCurrent = "right";
+                    } else {
+                        leftImageCurrent = "check";
+                    }
+                    final String rightImageCurrent;
+                    if (userY > yRequirement) {
+                        rightImageCurrent = "up";
+                    } else if (userY < yRequirement) {
+                        rightImageCurrent = "down";
+                    } else {
+                        rightImageCurrent = "check";
                     }
 
-                    //Delay a bit so the player has time to react.
+                    //Update imageviews only if a difference is found since last time
+                    if (!leftImage.equals(leftImageCurrent)) {
+                        //Have to do this, because can't access views from inside this thread
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if("left".equals(leftImageCurrent)) {
+                                    ivLeftRight.setImageResource(R.drawable.left_arrow);
+                                } else if ("right".equals(leftImageCurrent)) {
+                                    ivLeftRight.setImageResource(R.drawable.right_arrow);
+                                } else {
+                                    ivLeftRight.setImageResource(R.drawable.checkmark);
+                                }
+                            }
+                        });
+
+                        //After updating, change so that the next one will update
+                        leftImage = leftImageCurrent;
+                    }
+                    if (!rightImage.equals(rightImageCurrent)) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if("up".equals(rightImageCurrent)) {
+                                    ivUpDown.setImageResource(R.drawable.up_arrow);
+                                } else if ("down".equals(rightImageCurrent)) {
+                                    ivUpDown.setImageResource(R.drawable.down_arrow);
+                                } else {
+                                    ivUpDown.setImageResource(R.drawable.checkmark);
+                                }
+                            }
+                        });
+                        rightImage = rightImageCurrent;
+                    }
+
+                    //Check to see if the user has solved the puzzle, if so, reset the timer, and give
+                    //the player a quick break from this challenge. The break is mostly so they see two check marks, and know they did it right
+                    if (rightImageCurrent.equals("check") && leftImageCurrent.equals("check")){
+                        timeGiven = RandRange(8,14);
+                        timeStart = System.currentTimeMillis();
+                        xRequirement = RandRange(-5,5);
+                        yRequirement = RandRange(-5,5);
+                        getBreak = true;
+                        pbTilt.setProgress(100);
+                    }
+
+                    //Decrement the timer, and show the user that has happened, through the progress bar
+                    double timePassed = (double)(System.currentTimeMillis()-timeStart)/1000;
+                    double timeRemaining = (double)timeGiven - timePassed;
+                    int newProgress = (int)((timeRemaining/(double)timeGiven)*100);
+                    pbTilt.setProgress(newProgress);
+                    //If the user is out of time, lose the game
+                    if (timeRemaining < 0) {
+                        lostGame = true;
+                    }
+                    //Give the system a chance to catch up
                     try {
-                        Thread.sleep(refreshMilliseconds);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -189,6 +215,11 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         sensorManager.unregisterListener(this);
     }
 
+    //Method to generate random numbers in a range -P
+    public int RandRange(int min,int max){
+        return new Random().nextInt((max - min) + 1) + min;
+    }
+
     //Method to round numbers to specified level of precision -P
     public float Round(float input,int scale) {
         if (scale > 30) {
@@ -209,7 +240,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         return bd.doubleValue();
     }
 
-    //Can't update views
+    //Can't update views without using asynctasks (turns out I'm wrong)
     class updateTimer extends AsyncTask<String,String,String>{
         @Override
         protected String doInBackground(String... strings) {
