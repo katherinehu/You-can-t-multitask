@@ -2,6 +2,7 @@ package com.wave.sbauction;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,6 +11,7 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -50,6 +52,16 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         ivUpDown = findViewById(R.id.ivUpDown);
         //endregion
 
+        //regionDetermine which games to play
+        SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        final SharedPreferences.Editor editor = data.edit();
+        final boolean tiltDisabled = data.getBoolean("tiltDisabled",false);
+        boolean mathDisabled = data.getBoolean("mathDisabled",false);
+        boolean colorDisabled = data.getBoolean("colorDisabled",false);
+        boolean timerDisabled = data.getBoolean("timerDisabled",false);
+        boolean barsDisabled = data.getBoolean("barsDisabled",false);
+        //endregion
+
         //regionSet up a timer so the user knows how long they've survived. -P
         new Thread(){
             @Override
@@ -88,9 +100,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                 //reduce the system load                                            //possibilities below
                 String leftImage = "something different so it fills";                //check, left, right
                 String rightImage = "this with something, this is just temporary";   //check, up, down
-                //Determines if the player gets a break from this activitiy this loop
+                //Determines if the player gets a break from this activity this loop
                 boolean getBreak = false;
-                while(!lostGame){
+                while(!lostGame && !tiltDisabled){
                     //If the player has completed the challenge, give them a moment
                     if (getBreak) {
                         try {
