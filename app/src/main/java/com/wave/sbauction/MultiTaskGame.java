@@ -467,8 +467,8 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                     }.start();
                 }
                 else{
-                    btn_red.setText("×");
                     if(!colorCompleted) {
+                        btn_red.setText("×");
                         lostGame = true;
                     }
                 }
@@ -554,8 +554,8 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                     }.start();
                 }
                 else{
-                    btn_yellow.setText("×");
                     if(!colorCompleted) {
+                        btn_yellow.setText("×");
                         lostGame = true;
                     }
                 }
@@ -597,8 +597,8 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                     }.start();
                 }
                 else{
-                    btn_green.setText("×");
                     if(!colorCompleted) {
+                        btn_green.setText("×");
                         lostGame = true;
                     }
                 }
@@ -640,8 +640,8 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                     }.start();
                 }
                 else{
-                    btn_blue.setText("×");
                     if(!colorCompleted) {
+                        btn_blue.setText("×");
                         lostGame = true;
                     }
                 }
@@ -683,8 +683,8 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                     }.start();
                 }
                 else{
-                    btn_purple.setText("×");
                     if(!colorCompleted) {
+                        btn_purple.setText("×");
                         lostGame = true;
                     }
                 }
