@@ -317,7 +317,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                                         tv_randWord.setContentDescription("4");
                                         break;
                                     case 5:
-                                        tv_randWord.setTextColor(Color.BLUE);
+                                        tv_randWord.setTextColor(Color.parseColor("#03A9F4"));
                                         tv_randWord.setContentDescription("5");
                                         break;
                                     case 6:
@@ -358,6 +358,14 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                                 }
                             }
                         });
+
+                        //Give the user a break if they managed to complete the challenge
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
                         //How much time is normally given to do this task
                         timeGivenColor = RandRange(3,9);
                         timeStart[0] = System.currentTimeMillis();
@@ -387,17 +395,24 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
 
                 resetColor.run();
                 while (!lostGame && !colorDisabled ) {
+                    //Check if user has won this time around
+                    if (colorCompleted) {
+                        resetColor.run();
+                        //Synchronize this thread with the other, and give it an extra 50 milliseconds
+                        //to minimize the chance of a race condition
+                        try {
+                            Thread.sleep(1050);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        colorCompleted = false;
+                    }
+
                     //Decrement the timer, and show the user that has happened, through the progress bar
                     double timePassed = (double)(System.currentTimeMillis()- timeStart[0])/1000;
                     double timeRemaining = (double)timeGivenColor - timePassed;
                     int newProgress = (int)((timeRemaining/(double)timeGivenColor)*100);
                     pbColor.setProgress(newProgress);
-
-                    //Check if user has won this time around
-                    if (colorCompleted) {
-                        resetColor.run();
-                        colorCompleted = false;
-                    }
 
                     //If the user is out of time, lose the game
                     if (timeRemaining < 0) {
@@ -453,7 +468,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                 }
                 else{
                     btn_red.setText("×");
-                    lostGame = true;
+                    if(!colorCompleted) {
+                        lostGame = true;
+                    }
                 }
 
             }
@@ -495,7 +512,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                 }
                 else{
                     btn_orange.setText("×");
-                    lostGame = true;
+                    if(!colorCompleted) {
+                        lostGame = true;
+                    }
                 }
             }
         });
@@ -536,8 +555,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                 }
                 else{
                     btn_yellow.setText("×");
-                    lostGame = true;
-
+                    if(!colorCompleted) {
+                        lostGame = true;
+                    }
                 }
             }
         });
@@ -578,8 +598,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                 }
                 else{
                     btn_green.setText("×");
-                    lostGame = true;
-
+                    if(!colorCompleted) {
+                        lostGame = true;
+                    }
                 }
             }
         });
@@ -620,7 +641,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                 }
                 else{
                     btn_blue.setText("×");
-                    lostGame = true;
+                    if(!colorCompleted) {
+                        lostGame = true;
+                    }
                 }
             }
         });
@@ -661,7 +684,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                 }
                 else{
                     btn_purple.setText("×");
-                    lostGame = true;
+                    if(!colorCompleted) {
+                        lostGame = true;
+                    }
                 }
             }
         });
