@@ -7,6 +7,33 @@
     android:background="#FFFFFF"
     tools:context=".MultiTaskGame">
 
+    <Button
+        android:id="@+id/btn_green"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="#4CAF50"
+        android:text="Green"
+        tools:layout_editor_absoluteX="303dp"
+        tools:layout_editor_absoluteY="347dp" />
+
+    <Button
+        android:id="@+id/btn_orange"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="#FF9800"
+        android:text="Orange"
+        tools:layout_editor_absoluteX="358dp"
+        tools:layout_editor_absoluteY="347dp" />
+
+    <Button
+        android:id="@+id/btn_purple"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="#673AB7"
+        android:text="Purple"
+        tools:layout_editor_absoluteX="248dp"
+        tools:layout_editor_absoluteY="347dp" />
+
     <ProgressBar
         android:id="@+id/pbBar2"
         style="?android:attr/progressBarStyleHorizontal"
@@ -148,7 +175,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.33" />
+        app:layout_constraintGuide_begin="242dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
@@ -169,7 +196,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.66" />
+        app:layout_constraintGuide_begin="272dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline5"
@@ -220,5 +247,56 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/button5"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+    <TextView
+        android:id="@+id/tv_colorConfused"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WORD"
+        tools:layout_editor_absoluteX="85dp"
+        tools:layout_editor_absoluteY="253dp" />
+
+    <TextView
+        android:id="@+id/tv_randWord"
+        android:layout_width="3dp"
+        android:layout_height="61dp"
+        android:textSize="25dp"
+        tools:layout_editor_absoluteX="85dp"
+        tools:layout_editor_absoluteY="286dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="45dp"
+        tools:layout_editor_absoluteY="375dp" />
+
+    <Button
+        android:id="@+id/btn_red"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="#F44336"
+        android:text="Red"
+        tools:layout_editor_absoluteX="248dp"
+        tools:layout_editor_absoluteY="291dp" />
+
+    <Button
+        android:id="@+id/btn_yellow"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="#FFEB3B"
+        android:text="Yellow"
+        tools:layout_editor_absoluteX="303dp"
+        tools:layout_editor_absoluteY="291dp" />
+
+    <Button
+        android:id="@+id/btn_blue"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="#03A9F4"
+        android:text="Blue"
+        tools:layout_editor_absoluteX="358dp"
+        tools:layout_editor_absoluteY="291dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

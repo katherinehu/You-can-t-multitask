@@ -20,6 +20,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Random;
 
+import android.graphics.Color;
+
 /*
 Here, we have the entire game, which will prove to the humans that their multitasking ability is nonexistent.
  */
@@ -40,6 +42,8 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
     ImageView ivLeftRight;
     ImageView ivUpDown;
 
+    TextView tv_randWord;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +54,8 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         pbTilt = findViewById(R.id.pbTilt);
         ivLeftRight = findViewById(R.id.ivLeftRight);
         ivUpDown = findViewById(R.id.ivUpDown);
+
+        tv_randWord = findViewById(R.id.tv_randWord);
         //endregion
 
         //regionDetermine which games to play
@@ -201,6 +207,95 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
             }
         }.start();
         //endregion
+
+
+        //region Color confusion -k
+        //regionFirst game, tilt the phone to the specified tilts before time runs out -P
+
+        new Thread() {
+            @Override
+            public void run() {
+                int max = 6;
+                int min = 1;
+                int random_int = (int)(Math.random() * (max - min + 1) + min);
+                int random_int2 = (int)(Math.random() * (max - min + 1) + min);
+
+                switch(random_int2) {
+                    case 1:
+                        tv_randWord.setTextColor(Color.RED);
+                        break;
+                    case 2:
+                        tv_randWord.setTextColor(Color.YELLOW);
+                        break;
+                    case 3:
+                        tv_randWord.setTextColor(Color.BLUE);
+                        break;
+                    case 4:
+                        tv_randWord.setTextColor(Color.GREEN);
+                        break;
+                    case 5:
+                        tv_randWord.setTextColor(Color.parseColor("#800080"));
+                        break;
+                    case 6:
+                        tv_randWord.setTextColor(Color.parseColor("#FFA500"));
+                        break;
+                    default:
+                        tv_randWord.setTextColor(Color.WHITE);
+
+                switch(random_int) {
+                    case 1:
+                        tv_randWord.setText("RED");
+                        break;
+                    case 2:
+                        tv_randWord.setText("YELLOW");
+                        break;
+                    case 3:
+                        tv_randWord.setText("BLUE");
+                        break;
+                    case 4:
+                        tv_randWord.setText("GREEN");
+                        break;
+                    case 5:
+                        tv_randWord.setText("PURPLE");
+                        break;
+                    case 6:
+                        tv_randWord.setText("ORANGE");
+                        break;
+                    default:
+                        tv_randWord.setTextColor(Color.WHITE);
+
+
+
+                    //Check to see if the user has solved the puzzle, if so, reset the timer, and give
+                    //the player a quick break from this challenge. The break is mostly so they see two check marks, and know they did it right
+                    if (rightImageCurrent.equals("check") && leftImageCurrent.equals("check")){
+                        timeGiven = RandRange(8,14);
+                        timeStart = System.currentTimeMillis();
+                        xRequirement = RandRange(-5,5);
+                        yRequirement = RandRange(-5,5);
+                        pbTilt.setProgress(100);
+                    }
+
+                    //Decrement the timer, and show the user that has happened, through the progress bar
+                    double timePassed = (double)(System.currentTimeMillis()-timeStart)/1000;
+                    double timeRemaining = (double)timeGiven - timePassed;
+                    int newProgress = (int)((timeRemaining/(double)timeGiven)*100);
+                    pbTilt.setProgress(newProgress);
+                    //If the user is out of time, lose the game
+                    if (timeRemaining < 0) {
+                        lostGame = true;
+                    }
+                    //Give the system a chance to catch up
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+        //endregion
+
     }
 
     @Override
