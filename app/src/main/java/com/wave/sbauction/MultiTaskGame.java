@@ -169,7 +169,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
             @Override
             public void run() {
                 int xRequirement = RandRange(-5,5);
-                int yRequirement = RandRange(-5,5);
+                int yRequirement = RandRange(0,5);
                 int timeGiven = RandRange(8,14);
                 long timeStart = System.currentTimeMillis();
                 pbTilt.setProgress(100);
@@ -254,7 +254,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                         timeGiven = RandRange(8,14);
                         timeStart = System.currentTimeMillis();
                         xRequirement = RandRange(-5,5);
-                        yRequirement = RandRange(-5,5);
+                        yRequirement = RandRange(0,5);
                         getBreak = true;
                         pbTilt.setProgress(100);
                     }
@@ -267,6 +267,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                     //If the user is out of time, lose the game
                     if (timeRemaining < 0) {
                         lostGame = true;
+                        pbTilt.setProgress(0);
                     }
                     //Give the system a chance to catch up
                     try {
@@ -411,6 +412,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                         //If the user is out of time, lose the game
                         if (timeRemaining < 0) {
                             lostGame = true;
+                            pbColor.setProgress(0);
                         }
 
                         //Take a quick break, so the thread isn't as resource intensive
