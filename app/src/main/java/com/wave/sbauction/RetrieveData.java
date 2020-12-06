@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -29,14 +30,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RetrieveData extends AppCompatActivity {
 
     private String TAG = this.getClass().getSimpleName();
     //private NoteViewModel noteViewModel;;
 
-    TextView tvLoading;
+    TextView tvLoading, tvNerdInfo;
     Button btnGoWithData, btnRedoData;
+
+    static long[] timesRetrieved;
+    static boolean firstPageRetrieved = false;
+    static int totalAuctions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,7 @@ public class RetrieveData extends AppCompatActivity {
 
         //regionDeclare UI elements
         tvLoading = findViewById(R.id.tvLoadingNotification);
+        tvNerdInfo = findViewById(R.id.tvNerdInfo);
         btnGoWithData = findViewById(R.id.btnGoWithData);
         btnRedoData = findViewById(R.id.btnRedoData);
         //endregion
@@ -55,11 +62,10 @@ public class RetrieveData extends AppCompatActivity {
         //Inform user what is happening
         Toast.makeText(getApplicationContext(), "Contacting Hypixel API...", Toast.LENGTH_SHORT).show();
 
-        //Start a thread so the UI shows up while data retrieval and storage runs -P
+        //regionStart a thread so the UI shows up while data retrieval and storage runs -P
         new Thread(){
             @Override
             public void run() {
-                Looper.prepare();
                 super.run();
 
                 //regionGet first page of data, and use it to figure out how many pages we need. -P
@@ -74,87 +80,134 @@ public class RetrieveData extends AppCompatActivity {
                 }
 
                 //Store the auction info from the first page, use this later for the final set as well
-                JSONObject auctionInfo = null;
+                JSONObject auctionInfo;
                 //Store the time retrieved
                 long timeUpdated = 0;
                 //Find out how many pages we need to eventually retrieve
                 int totalPages = 0;
                 //Total number of auctions
-                String totalAuctions = null;
                 try {
                     auctionInfo = new JSONObject(firstPage);
                     timeUpdated = auctionInfo.getLong("lastUpdated");
                     totalPages = auctionInfo.getInt("totalPages");
-                    totalAuctions = auctionInfo.getString("totalAuctions");
+                    totalAuctions = auctionInfo.getInt("totalAuctions");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                //Store the data
-                SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                SharedPreferences.Editor editor = data.edit();
-                String storeAuctionInfo = auctionInfo.toString();
-                editor.putInt("totalAuctionPages",totalPages);
-                editor.apply();
 
-                String filename = "auctionPage0";
-                saveData(filename,firstPage);
+                //Find out how big of an array timesRetrieved needs to be
+                timesRetrieved = new long[totalPages + 1];
+
+                //Fill with 0, to make it easier to do later calculations
+                for(int i = 0; i < timesRetrieved.length; ++i) {
+                    timesRetrieved[0] = 0;
+                }
+                //Inform the other thread that it's time to start updating
+                firstPageRetrieved = true;
+                Log.d("DataInformation","First page retrieved");
+                timesRetrieved[0] = timeUpdated;
+
+                //regionStore the data -P
+                    SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = data.edit();
+                    //This informs later processes how many pages there are
+                    editor.putInt("totalAuctionPages",totalPages);
+                    editor.apply();
+
+                    String filename = "auctionPage0";
+                    saveData(filename,firstPage);
+                //endregion
+
                 //endregion
 
                 //regionRetrieve the remaining pages -P
-                //Place to put the last page, since we'll use it later
-                String lastPageString = null;
-                ArrayList<String> remainingPages = new ArrayList<>();
-
                 //Starts at 1, because we already retrieved the 0 page as the first page.
                 //Also, I checked, and you do need to retrieve the 52nd page if there are say, 52 pages.
                 for (int i = 1; i <= totalPages; ++i) {
-                    try {
-                        final String newPage = new RetrieveAuctions().execute(auctionURL + i, Integer.toString(i*1000), totalAuctions).get();
-                        //Store the data
-                        final String filename2 = "auctionPage" + i;
-                        new Thread(){
-                            @Override
-                            public void run() {
-                                super.run();
-                                saveData(filename2, newPage);
-                            }
-                        }.start();
-                        //Save the last page to check if the times match up
-                        if(i == totalPages) {
-                            lastPageString = newPage;
-                        }
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                //endregion
-
-                //regionCheck to make sure data hasn't changed -P
-                JSONObject lastPage;
-                long timeUpdatedLast = 0;
-                try {
-                    //Get information from the last page of auction data, check to see if the time is the same
-                    lastPage = new JSONObject(lastPageString);
-                    timeUpdatedLast = lastPage.getLong("lastUpdated");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                if (timeUpdatedLast != timeUpdated) {
-                    //The server has updated since data retrieval has begun, give user option to try again.
-                    new ShowFailureButtons().execute();
-                    Toast.makeText(getApplicationContext(),"Data retrieval issue.",Toast.LENGTH_SHORT).show();
-                } else {
-                    //If no problems found, go back to the auction menu page.
-                    Toast.makeText(getApplicationContext(),"All data successfully retrieved.",Toast.LENGTH_SHORT).show();
-                    Intent goBack = new Intent(getApplicationContext(),AuctionMainMenu.class);
-                    startActivity(goBack);
+                    String page = Integer.toString(i);
+                    String url = auctionURL + page;
+                    new RetrieveAuctions1().execute(url,page);
                 }
                 //endregion
             }
         }.start();
+        //endregion
+
+        //regionThis thread helps to inform the user how far along the data retrieval is coming along -P
+        new Thread(){
+            @Override
+            public void run() {
+                Looper.prepare();
+                super.run();
+                boolean finished = false;
+                int arraySize;
+                while(!finished){
+                    if(firstPageRetrieved){
+                        int pagesCompleted = 0;
+                        arraySize = timesRetrieved.length;
+                        for(int i = 0; i < arraySize; ++i) {
+                            if (timesRetrieved[i] > 0){
+                                ++pagesCompleted;
+                            }
+                        }
+                        final int pagesCompletedFinal = pagesCompleted;
+                        //Update the information so the user knows what's going on
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String loadingNotification;
+                                //This part is just here so that the user doesn't get confused when the phone "loads a higher number of auctions than exist"
+                                if(pagesCompletedFinal == timesRetrieved.length) {
+                                    loadingNotification = "Be patient while your phone gets ALL the auction data.\nLoaded " + totalAuctions + " of " + totalAuctions + " total auctions.";
+                                } else {
+                                    loadingNotification = "Be patient while your phone gets ALL the auction data.\nLoaded " + (pagesCompletedFinal * 1000) + " of " + totalAuctions + " total auctions.";
+                                }
+                                tvLoading.setText(loadingNotification);
+                            }
+                        });
+                        if (pagesCompleted == arraySize){
+                            //regionCheck to make sure data hasn't changed -P
+                            boolean timeChanged = false;
+                            for(long element:timesRetrieved){
+                                //If any of the times are different, mention it as such
+                                if (element != timesRetrieved[0]){
+                                    timeChanged = true;
+                                    //I mean the break isn't truly necessary because its such a small array, but
+                                    //might as well save those few nanoseconds if we can
+                                    break;
+                                }
+                            }
+                            if (timeChanged) {
+                                //The server has updated since data retrieval has begun, give user option to try again.
+                                new ShowFailureButtons().execute();
+                                Toast.makeText(getApplicationContext(),"Data retrieval issue.",Toast.LENGTH_SHORT).show();
+                            } else {
+                                //If no problems found, go back to the auction menu page.
+                                Toast.makeText(getApplicationContext(),"All data successfully retrieved.",Toast.LENGTH_SHORT).show();
+                                Intent goBack = new Intent(getApplicationContext(),AuctionMainMenu.class);
+                                startActivity(goBack);
+                            }
+                            //endregion
+                            finished = true;
+                        }
+                        Log.d("DataInformation","pagesCompleted: " + pagesCompleted + " arraySize: " + arraySize);
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        //Wait for results
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }.start();
+        //endregion
 
         //region Buttons used for data problems -P
         //first make invisible, will become visible if needed
@@ -183,7 +236,7 @@ public class RetrieveData extends AppCompatActivity {
 
 
         //region Room database creation -k
-        NoteRoomDatabase myDatabase;
+        //NoteRoomDatabase myDatabase;
     }
 
     //Save files on the device -P
@@ -273,6 +326,60 @@ public class RetrieveData extends AppCompatActivity {
         }
     }
 
+    //This class is similar to the other one, but is redesigned to work on not just the first page.
+    public class RetrieveAuctions1 extends AsyncTask<String, String, Long> {
+
+        String page;
+
+        protected Long doInBackground(String... params) {
+            page = params[1];
+            Log.d("DataInformation","started " + page);
+
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+            long timeRetrieved = -1;
+            try {
+                URL url = new URL(params[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+                InputStream stream = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(stream));
+                StringBuilder buffer = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line).append("\n");
+                }
+                String retrievedData = buffer.toString();
+                JSONObject temp = new JSONObject(retrievedData);
+                String filename = "auctionPage" + page;
+                //Save the data
+                saveData(filename,retrievedData);
+                //Set the return value
+                timeRetrieved = temp.getLong("lastUpdated");
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return timeRetrieved;
+        }
+
+        @Override
+        protected void onPostExecute(Long timeRetrieved) {
+            //Update the array from earlier so the user knows how far along the progress is coming
+            timesRetrieved[Integer.parseInt(page)] = timeRetrieved;
+        }
+    }
+
     //Gives user option to try again, or not, if discrepancy was detected.
     public class ShowFailureButtons extends AsyncTask<Void,Void,Void> {
 
@@ -286,6 +393,7 @@ public class RetrieveData extends AppCompatActivity {
             super.onPostExecute(aVoid);
             btnGoWithData.setVisibility(View.VISIBLE);
             btnRedoData.setVisibility(View.VISIBLE);
+            tvNerdInfo.setVisibility(View.GONE);
         }
     }
 
