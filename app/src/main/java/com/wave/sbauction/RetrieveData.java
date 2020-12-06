@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +31,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 public class RetrieveData extends AppCompatActivity {
+
+    private String TAG = this.getClass().getSimpleName();
+    //private NoteViewModel noteViewModel;
 
     TextView tvLoading;
     Button btnGoWithData, btnRedoData;
@@ -175,6 +179,11 @@ public class RetrieveData extends AppCompatActivity {
             }
         });
         //endregion
+
+
+
+        //region Room database creation -k
+        NoteRoomDatabase myDatabase;
     }
 
     //Save files on the device -P
@@ -279,6 +288,8 @@ public class RetrieveData extends AppCompatActivity {
             btnRedoData.setVisibility(View.VISIBLE);
         }
     }
+
+
 
 //    ATTEMPT TO MAKE THIS WORK, THAT DIDN'T PAN OUT, IGNORE IT, UNLESS YOU WANT AN EXAMPLE OF WHAT NOT TO DO -P
 //    All of the code that runs in the get data button runs here, so that the user can be alerted to the progress,

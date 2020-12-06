@@ -389,7 +389,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                         }
 
                         //How much time is normally given to do this task
-                        timeGivenColor = RandRange(3,9);
+                        timeGivenColor = RandRange(5,10);
                         timeStart[0] = System.currentTimeMillis();
 
                         colorCompleted = false;
