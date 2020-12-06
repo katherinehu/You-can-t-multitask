@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 public class RetrieveData extends AppCompatActivity {
 
     private String TAG = this.getClass().getSimpleName();
-    //private NoteViewModel noteViewModel;
+    //private NoteViewModel noteViewModel;;
 
     TextView tvLoading;
     Button btnGoWithData, btnRedoData;
