@@ -184,7 +184,7 @@ public class RetrieveData extends AppCompatActivity {
             @Override
             public void run() {
                 super.run();
-                //Clear old database
+                //Clear old database 1
 //                while(old databse not cleared) {
 //                    check to see if old databse cleared
 //                }
