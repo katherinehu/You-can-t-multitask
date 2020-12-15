@@ -97,7 +97,7 @@ public class RetrieveData extends AppCompatActivity {
 
                 //region get data and store it into user objects -k
                 String uuid;
-                JSONObject auctions = null;
+                JSONArray allAuctions = null;
 
                 AppDatabase db = Room.databaseBuilder(getApplicationContext(),
                         AppDatabase.class, "production")
@@ -107,22 +107,8 @@ public class RetrieveData extends AppCompatActivity {
                 try {
                     JSONObject value = null;
 
-                    auctions = auctionInfo.getJSONObject("auctions");
-                    value = auctions.getJSONObject("value");
-                    JSONArray jArray;
+                    allAuctions = auctionInfo.getJSONArray("auctions");
 
-                    jArray = value.getJSONArray("values");
-                    ArrayList<JSONObject> arrItems = new ArrayList<>();
-
-                    if (jArray != null) {
-                        for (int i=0;i<jArray.length();i++){
-                            arrItems.add(jArray.optJSONObject(i));
-                        }
-                    }
-
-                    String uid = arrItems.get(0).getString("uuid");
-                    System.out.println(uid);
-                    Log.d("HERE", uid);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
