@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,7 +15,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.room.Room;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class RetrieveData extends AppCompatActivity {
@@ -89,6 +93,42 @@ public class RetrieveData extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                //region get data and store it into user objects -k
+                String uuid;
+                JSONObject auctions = null;
+
+                AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+                        AppDatabase.class, "production")
+                        .build();
+
+                List<User> users = db.userDao().getAllUsers();
+                try {
+                    JSONObject value = null;
+
+                    auctions = auctionInfo.getJSONObject("auctions");
+                    value = auctions.getJSONObject("value");
+                    JSONArray jArray;
+
+                    jArray = value.getJSONArray("values");
+                    ArrayList<JSONObject> arrItems = new ArrayList<>();
+
+                    if (jArray != null) {
+                        for (int i=0;i<jArray.length();i++){
+                            arrItems.add(jArray.optJSONObject(i));
+                        }
+                    }
+
+                    String uid = arrItems.get(0).getString("uuid");
+                    System.out.println(uid);
+                    Log.d("HERE", uid);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
                 //Store the data
                 SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 SharedPreferences.Editor editor = data.edit();
@@ -182,8 +222,6 @@ public class RetrieveData extends AppCompatActivity {
 
 
 
-        //region Room database creation -k
-        NoteRoomDatabase myDatabase;
     }
 
     //Save files on the device -P

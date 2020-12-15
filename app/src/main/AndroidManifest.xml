@@ -12,10 +12,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RetrieveData"></activity>
-        <activity android:name=".MultiTaskGame"
+        <activity android:name=".DisplayData"></activity>
+        <activity android:name=".RetrieveData" />
+        <activity
+            android:name=".MultiTaskGame"
             android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity android:name=".MultiTaskMainMenu" />
         <activity android:name=".AuctionMainMenu" />
         <activity android:name=".Welcome" />
