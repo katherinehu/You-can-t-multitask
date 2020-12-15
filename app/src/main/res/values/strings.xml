@@ -10,4 +10,14 @@
      physical device that result from the usage of this app. By clicking agree below, you acknowledge that you use
     this app at your own risk, and you will not hold the author responsible for any damages. If you do not agree
     to these terms, uninstall this app.</string>
+    <string name="nerd_info">Well, you probably want something to do while you wait for stuff to load.
+    So, for the people that actually know how things work, I figured I might as well explain what\'s going on in this page.
+    Hypixel stores 1000 auctions per page, located at differing URLS. As you probably saw, it didn\'t take super long to contact
+    Hypixel API and retrieve the first page, along with information on how many more pages there are to retrieve.
+    What I did was create a thread safe array, and store the times that the server took the information.
+    Then, using multiple threads, I launched a bunch of HTTP requests, and how fast the information comes depends on
+    how many threads your phone can simultaneously launch. Each thread retrieves the information, and stores it somewhere
+    on your phone. So at this point, if its slow, just blame your phone. As for how you know how far along the data retrieval is coming,
+    well I have another thread monitoring how many of the times have been filled in the array I mentioned earlier. That is what\'s
+    causing the updates in the text you see above.</string>
 </resources>
