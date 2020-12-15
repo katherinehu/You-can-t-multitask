@@ -7,11 +7,11 @@ import androidx.room.Query;
 import java.util.List;
 
 @Dao
-public interface UserDao {
-    @Query("SELECT * FROM user")
-    List<User> getAllUsers();
+public interface AuctionDao {
+    @Query("SELECT * FROM Auction")
+    List<Auction> getAllAuctions();
 
     @Insert
-    void insertAll(User...users) ;
+    void insertAll(Auction...auctions) ;
 
 }

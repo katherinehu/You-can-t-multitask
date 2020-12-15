@@ -10,28 +10,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
-    ArrayList<User> users;
+class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.ViewHolder> {
+    ArrayList<Auction> auctions;
 
-    public UserAdapter(ArrayList<User> users) {
-        this.users = users;
+    public AuctionAdapter(ArrayList<Auction> auctions) {
+        this.auctions = auctions;
     }
 
     @NonNull
     @Override
-    public UserAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_row, parent,  false);
+    public AuctionAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.auction_row, parent,  false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UserAdapter.ViewHolder holder, int position) {
-        holder.item_name.setText(users.get(position).item_name);
+    public void onBindViewHolder(@NonNull AuctionAdapter.ViewHolder holder, int position) {
+        holder.item_name.setText(auctions.get(position).item_name);
     }
 
     @Override
     public int getItemCount() {
-        return users.size();
+        return auctions.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

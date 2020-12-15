@@ -7,14 +7,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.room.Room;
 
 import org.json.JSONArray;
@@ -88,25 +86,22 @@ public class RetrieveData extends AppCompatActivity {
                 try {
                     auctionInfo = new JSONObject(firstPage);
                     timeUpdated = auctionInfo.getLong("lastUpdated");
-                    //error occurs here
                     totalPages = auctionInfo.getInt("totalPages");
                     totalAuctions = auctionInfo.getString("totalAuctions");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                //region get data and store it into user objects -k
+                //region get data and store it into auction objects -k
                 String uuid;
                 JSONArray allAuctions = null;
-
-                AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                        AppDatabase.class, "production")
+                AppDatabase currentAuctionsdb = Room.databaseBuilder(getApplicationContext(),
+                        AppDatabase.class, "CurrentAuctionsDB")
                         .build();
-
-                List<User> users = db.userDao().getAllUsers();
+                //Clear it, so that we can put in fresh values
+                currentAuctionsdb.clearAllTables();
                 try {
                     JSONObject value = null;
-
                     allAuctions = auctionInfo.getJSONArray("auctions");
 
 

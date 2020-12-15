@@ -12,7 +12,7 @@ public class DisplayData extends AppCompatActivity {
 
     RecyclerView rc;
     RecyclerView.Adapter adapter;
-    ArrayList<User> users;
+    ArrayList<Auction> users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +21,7 @@ public class DisplayData extends AppCompatActivity {
 
         rc = findViewById(R.id.my_recycler_view);
         rc.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new UserAdapter(users);
+        adapter = new AuctionAdapter(users);
         rc.setAdapter(adapter);
     }
 }
