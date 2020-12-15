@@ -39,6 +39,12 @@ public class RetrieveData extends AppCompatActivity {
 
     TextView tvLoading;
     Button btnGoWithData, btnRedoData;
+    ArrayList<Auction> auctions;
+
+
+    AppDatabase currentAuctionsdb = Room.databaseBuilder(getApplicationContext(),
+            AppDatabase.class, "CurrentAuctionsDB")
+            .build();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +94,13 @@ public class RetrieveData extends AppCompatActivity {
                     timeUpdated = auctionInfo.getLong("lastUpdated");
                     totalPages = auctionInfo.getInt("totalPages");
                     totalAuctions = auctionInfo.getString("totalAuctions");
+
+                    //save time first page is retrieved
+                    SharedPreferences timeSaved = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = timeSaved.edit();
+                    editor.putLong(String.valueOf(timeSaved.getAll().size()), timeUpdated);
+                    editor.apply();
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -95,15 +108,11 @@ public class RetrieveData extends AppCompatActivity {
                 //region get data and store it into auction objects -k
                 String uuid;
                 JSONArray allAuctions = null;
-                AppDatabase currentAuctionsdb = Room.databaseBuilder(getApplicationContext(),
-                        AppDatabase.class, "CurrentAuctionsDB")
-                        .build();
-                //Clear it, so that we can put in fresh values
-                currentAuctionsdb.clearAllTables();
+
+
                 try {
                     JSONObject value = null;
                     allAuctions = auctionInfo.getJSONArray("auctions");
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -111,15 +120,15 @@ public class RetrieveData extends AppCompatActivity {
 
 
 
-                //Store the data
-                SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                SharedPreferences.Editor editor = data.edit();
-                String storeAuctionInfo = auctionInfo.toString();
-                editor.putInt("totalAuctionPages",totalPages);
-                editor.apply();
-
-                String filename = "auctionPage0";
-                saveData(filename,firstPage);
+//                //Store the data
+//                SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//                SharedPreferences.Editor editor = data.edit();
+//                String storeAuctionInfo = auctionInfo.toString();
+//                editor.putInt("totalAuctionPages",totalPages);
+//                editor.apply();
+//
+//                String filename = "auctionPage0";
+//                saveData(filename,firstPage);
                 //endregion
 
                 //regionRetrieve the remaining pages -P
@@ -184,15 +193,27 @@ public class RetrieveData extends AppCompatActivity {
             @Override
             public void run() {
                 super.run();
-                //Clear old database 1
-//                while(old databse not cleared) {
-//                    check to see if old databse cleared
-//                }
-//                once its done
+                // clear all items in database
+                currentAuctionsdb.clearAllTables();
+                boolean notCleared = true;
+                while (notCleared) {
+                    //check if there are items in the database. if not, leave loop;
+                    if (currentAuctionsdb.AuctionDao().getAnAuctionItem() == null) {
+                        notCleared = false;
+                    }
+                    try {
+                        Thread.sleep(0);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 retrieveData.start();
             }
         }.start();
+
+
         //endregion
+
 
         //region Buttons used for data problems -P
         //first make invisible, will become visible if needed
@@ -324,6 +345,25 @@ public class RetrieveData extends AppCompatActivity {
             btnRedoData.setVisibility(View.VISIBLE);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
