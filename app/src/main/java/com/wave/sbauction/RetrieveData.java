@@ -88,6 +88,7 @@ public class RetrieveData extends AppCompatActivity {
                 try {
                     auctionInfo = new JSONObject(firstPage);
                     timeUpdated = auctionInfo.getLong("lastUpdated");
+                    //error occurs here
                     totalPages = auctionInfo.getInt("totalPages");
                     totalAuctions = auctionInfo.getString("totalAuctions");
                 } catch (JSONException e) {
