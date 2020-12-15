@@ -57,8 +57,8 @@ public class RetrieveData extends AppCompatActivity {
         //Inform user what is happening
         Toast.makeText(getApplicationContext(), "Contacting Hypixel API...", Toast.LENGTH_SHORT).show();
 
-        //Start a thread so the UI shows up while data retrieval and storage runs -P
-        new Thread(){
+        //regionStart a thread so the UI shows up while data retrieval and storage runs -P
+        final Thread retrieveData = new Thread(){
             @Override
             public void run() {
                 Looper.prepare();
@@ -176,7 +176,23 @@ public class RetrieveData extends AppCompatActivity {
                 }
                 //endregion
             }
+        };
+        //endregion
+
+        //regionThread to clear the old database -k
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                //Clear old database
+//                while(old databse not cleared) {
+//                    check to see if old databse cleared
+//                }
+//                once its done
+                retrieveData.start();
+            }
         }.start();
+        //endregion
 
         //region Buttons used for data problems -P
         //first make invisible, will become visible if needed

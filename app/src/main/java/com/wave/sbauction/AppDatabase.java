@@ -5,5 +5,5 @@ import androidx.room.RoomDatabase;
 
 @Database(entities = {Auction.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
-    public abstract AuctionDao userDao();
+    public abstract AuctionDao AuctionDao();
 }
