@@ -705,6 +705,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         });
         //endregion
 
+        //test
         //regionDigit determination game, press buttons while that number exists in the timer -P
         new Thread(){
             @Override
