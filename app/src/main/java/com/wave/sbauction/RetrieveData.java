@@ -126,6 +126,7 @@ public class RetrieveData extends AppCompatActivity {
                             binFlag = false;
                         }
 
+                        //add aaa auction items in page to db
                         currentAuctionsdb.AuctionDao()
                                 .insertAll(new Auction(
                                         currentAuction.getString("uuid"),
