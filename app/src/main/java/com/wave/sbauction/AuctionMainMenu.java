@@ -29,7 +29,7 @@ Furthermore, this activity is where the data is actually loaded from the server
 public class AuctionMainMenu extends AppCompatActivity {
 
     Button btnGetData;
-
+    Button btn_dispData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +38,7 @@ public class AuctionMainMenu extends AppCompatActivity {
 
         //regionInitialize views
         btnGetData = findViewById(R.id.btnGetData);
+        btn_dispData = findViewById(R.id.btn_dispData);
 
         final Intent getData = new Intent(this,RetrieveData.class);
         final Intent displayData = new Intent(this,DisplayData.class);
@@ -46,8 +47,13 @@ public class AuctionMainMenu extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(getData);
-                startActivity(displayData);
+            }
+        });
 
+        btn_dispData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(displayData);
             }
         });
 
