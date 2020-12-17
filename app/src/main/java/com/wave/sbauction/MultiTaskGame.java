@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,21 +12,20 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Random;
-
-import android.graphics.Color;
-
-import androidx.annotation.RequiresApi;
 
 /*
 Here, we have the entire game, which will prove to the humans that their multitasking ability is nonexistent.
@@ -60,6 +59,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
     Button btn_yellow;
     ProgressBar pbColor;
 
+    Button btnTime1, btnTime2, btnTime3;
+    ProgressBar pbTime;
+
     boolean clicked_green = false;
     boolean clicked_blue = false;
     boolean clicked_red = false;
@@ -73,6 +75,12 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
     static String textOrColor = "color";
     int randTextColor;
     int randTextValue;
+
+    //Timer game
+    static int button1Number = 1;
+    static int button2Number = 4;
+    static int button3Number = 9;
+    static boolean completedTimer = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,14 +106,17 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         btn_yellow = (Button)findViewById(R.id.btn_yellow);
         pbColor = findViewById(R.id.pbColor);
 
-
+        btnTime1 = findViewById(R.id.btnTime1);
+        btnTime2 = findViewById(R.id.btnTime2);
+        btnTime3 = findViewById(R.id.btnTime3);
+        pbTime = findViewById(R.id.pbTimer);
         //endregion
 
         //regionDetermine which games to play
         SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final SharedPreferences.Editor editor = data.edit();
         final boolean tiltDisabled = data.getBoolean("tiltDisabled",false);
-        final boolean mathDisabled = data.getBoolean("mathDisabled",false);
+        final boolean pressDisabled = data.getBoolean("pressDisabled",false);
         final boolean colorDisabled = data.getBoolean("colorDisabled",false);
         final boolean timerDisabled = data.getBoolean("timerDisabled",false);
         final boolean barsDisabled = data.getBoolean("barsDisabled",false);
@@ -122,7 +133,13 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                     long timeDiff = currentTime - firstTime;
                     timeElapsed = (double)timeDiff / 1000;
                     String time = "Time Survived: " + Round(timeElapsed,1);
-                    new updateTimer().execute(time);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String time = "Time Survived: " + Round(timeElapsed,1);
+                            tvTimer.setText(time);
+                        }
+                    });
                     try {
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
@@ -170,7 +187,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
             public void run() {
                 int xRequirement = RandRange(-5,5);
                 int yRequirement = RandRange(0,5);
-                int timeGiven = RandRange(8,14);
+                int timeGiven = RandRange(8,14,"max");
                 long timeStart = System.currentTimeMillis();
                 pbTilt.setProgress(100);
                 //They will get changed to names of images, and only changed when there's a change, to
@@ -251,7 +268,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                     //Check to see if the user has solved the puzzle, if so, reset the timer, and give
                     //the player a quick break from this challenge. The break is mostly so they see two check marks, and know they did it right
                     if (rightImageCurrent.equals("check") && leftImageCurrent.equals("check")){
-                        timeGiven = RandRange(8,14);
+                        timeGiven = RandRange(8,14,"max");
                         timeStart = System.currentTimeMillis();
                         xRequirement = RandRange(-5,5);
                         yRequirement = RandRange(0,5);
@@ -279,7 +296,6 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
             }
         }.start();
         //endregion
-
 
         //region Color confusion -k
         new Thread() {
@@ -389,7 +405,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                         }
 
                         //How much time is normally given to do this task
-                        timeGivenColor = RandRange(5,10);
+                        timeGivenColor = RandRange(5,10,"max");
                         timeStart[0] = System.currentTimeMillis();
 
                         colorCompleted = false;
@@ -689,6 +705,162 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         });
         //endregion
 
+        //regionDigit determination game, press buttons while that number exists in the timer -P
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                long timeStart = System.currentTimeMillis();
+                int timeGiven = RandRange(7,20,"min");
+
+                //Make sure that the other 2 buttons are different
+                boolean success2 = false;
+                while(!success2) {
+                    if(button2Number == button1Number) {
+                        button2Number = RandRange(0,9);
+                    } else {
+                        success2 = true;
+                    }
+                }
+                boolean success3 = false;
+                while(!success3) {
+                    if(button2Number == button3Number || button1Number == button3Number) {
+                        button3Number = RandRange(0,9);
+                    } else {
+                        success3 = true;
+                    }
+                }
+
+                //Label the buttons so the user knows which ones to press
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String btnText1 = "   " + button1Number + "   ";
+                        String btnText2 = "   " + button2Number + "   ";
+                        String btnText3 = "   " + button3Number + "   ";
+                        btnTime1.setText(btnText1);
+                        btnTime2.setText(btnText2);
+                        btnTime3.setText(btnText3);
+                    }
+                });
+                pbTime.setProgress(100);
+
+                while(!lostGame && !timerDisabled) {
+                    //If the player does the task successfully
+                    if(completedTimer) {
+                        button1Number = RandRange(0,9);
+                        button2Number = RandRange(0,9);
+                        button3Number = RandRange(0,9);
+                        //Make sure that the other 2 buttons are different
+                        success2 = false;
+                        while(!success2) {
+                            if(button2Number == button1Number) {
+                                button2Number = RandRange(0,9);
+                            } else {
+                                success2 = true;
+                            }
+                        }
+                        success3 = false;
+                        while(!success3) {
+                            if(button2Number == button3Number || button1Number == button3Number) {
+                                button3Number = RandRange(0,9);
+                            } else {
+                                success3 = true;
+                            }
+                        }
+
+                        pbTime.setProgress(100);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String btnText1 = "   " + button1Number + "   ";
+                                String btnText2 = "   " + button2Number + "   ";
+                                String btnText3 = "   " + button3Number + "   ";
+                                btnTime1.setText(btnText1);
+                                btnTime2.setText(btnText2);
+                                btnTime3.setText(btnText3);
+                                btnTime1.setEnabled(false);
+                                btnTime2.setEnabled(false);
+                                btnTime3.setEnabled(false);
+                            }
+                        });
+                        //Disable the buttons for a moment so users don't double tap and lose
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnTime1.setEnabled(true);
+                                btnTime2.setEnabled(true);
+                                btnTime3.setEnabled(true);
+                            }
+                        });
+                        timeStart = System.currentTimeMillis();
+                        timeGiven = RandRange(7,20,"min");
+                        completedTimer = false;
+                    } else {
+                        //Decrement the timer if nothing happened
+                        double timePassed = (double)(System.currentTimeMillis()-timeStart)/1000;
+                        double timeRemaining = (double)timeGiven - timePassed;
+                        int newProgress = (int)((timeRemaining/(double)timeGiven)*100);
+                        pbTime.setProgress(newProgress);
+                        if (timeRemaining < 0) {
+                            lostGame = true;
+                        }
+                        //Take a break so the thread doesn't use too much processing power
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }.start();
+
+        btnTime1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnTime1.setEnabled(false);
+                String currentTime = tvTimer.getText().toString();
+                if(currentTime.contains(Integer.toString(button1Number))) {
+                    completedTimer = true;
+                } else {
+                    lostGame = true;
+                }
+            }
+        });
+
+        btnTime2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnTime2.setEnabled(false);
+                String currentTime = tvTimer.getText().toString();
+                if(currentTime.contains(Integer.toString(button2Number))) {
+                    completedTimer = true;
+                } else {
+                    lostGame = true;
+                }
+            }
+        });
+
+        btnTime3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnTime3.setEnabled(false);
+                String currentTime = tvTimer.getText().toString();
+                if(currentTime.contains(Integer.toString(button3Number))) {
+                    completedTimer = true;
+                } else {
+                    lostGame = true;
+                }
+            }
+        });
+        //endregion
+
     }
 
 
@@ -730,6 +902,41 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
     //Method to generate random numbers in a range -P
     public int RandRange(int min,int max){
         return new Random().nextInt((max - min) + 1) + min;
+    }
+
+    //Method to generate random numbers in a range, but weighted -P
+    public int RandRange(int min, int max, String direction) {
+        int middle = (max - min)/2 + min;
+        int choice = new Random().nextInt((max - min) + 1) + min;
+        boolean chosen = false;
+        while(!chosen){
+            //Takes two directions, max or min, and will skew results towards that direction
+            if(direction.equals("max")){
+                if (choice < middle) {
+                    if(new Random().nextInt(10) < 2) {
+                        chosen = true;
+                    } else {
+                        choice = new Random().nextInt((max-min) + 1) + min;
+                    }
+                } else {
+                    chosen = true;
+                }
+            } else if (direction.equals("min")) {
+                if (choice > middle) {
+                    if(new Random().nextInt(10) < 2) {
+                        chosen = true;
+                    } else {
+                        choice = new Random().nextInt((max-min) + 1) + min;
+                    }
+                } else {
+                    chosen = true;
+                }
+            } else {
+                //Crash the app so I know I screwed up
+                Toast.makeText(getApplicationContext(),"you messed up",Toast.LENGTH_SHORT).show();
+            }
+        }
+        return choice;
     }
 
     //Method to round numbers to specified level of precision -P
