@@ -39,9 +39,10 @@ public class RetrieveData extends AppCompatActivity {
 
     TextView tvLoading;
     Button btnGoWithData, btnRedoData;
-    ArrayList<Auction> auctions;
     static boolean[] hasBeenRetrieved;
     static boolean startLooking = false;
+    //Total number of auctions
+    static String totalAuctions = null;
 
     static AppDatabase currentAuctionsdb;
 
@@ -88,8 +89,6 @@ public class RetrieveData extends AppCompatActivity {
                 long timeUpdated = 0;
                 //Find out how many pages we need to eventually retrieve
                 int totalPages = 0;
-                //Total number of auctions
-                String totalAuctions = null;
                 //Store the auction info from the first page
                 JSONObject auctionInfo = null;
 
@@ -105,7 +104,13 @@ public class RetrieveData extends AppCompatActivity {
                     hasBeenRetrieved[0] = true;
                     startLooking = true;
                     totalAuctions = auctionInfo.getString("totalAuctions");
-
+                    //show the user what's going on
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tvLoading.setText("Loaded 1000 of " + totalAuctions + " auctions.");
+                        }
+                    });
                     //save time first page is retrieved
                     SharedPreferences timeSaved = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                     SharedPreferences.Editor editor = timeSaved.edit();
@@ -260,12 +265,23 @@ public class RetrieveData extends AppCompatActivity {
                 boolean finished = false;
                 while(!finished){
                     if (startLooking) {
-                        finished = true;
+                        int counter = 1;
                         for (boolean elements : hasBeenRetrieved) {
-                            if (!elements) {
-                                finished = false;
-                                break;
+                            if (elements) {
+                                ++counter;
                             }
+                        }
+                        if (counter == hasBeenRetrieved.length) {
+                            finished = true;
+                        } else {
+                            final int finalCounter = counter;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String display = "Loaded " + (finalCounter * 1000) + " of " + totalAuctions + " auctions.";
+                                    tvLoading.setText(display);
+                                }
+                            });
                         }
                         try {
                             Thread.sleep(10);
