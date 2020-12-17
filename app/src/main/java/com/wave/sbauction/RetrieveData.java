@@ -514,6 +514,24 @@ public class RetrieveData extends AppCompatActivity {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //    ATTEMPT TO MAKE THIS WORK, THAT DIDN'T PAN OUT, IGNORE IT, UNLESS YOU WANT AN EXAMPLE OF WHAT NOT TO DO -P
 //    All of the code that runs in the get data button runs here, so that the user can be alerted to the progress,
 //    because you have to retrieve nearly 40 megabytes of data, and that could take a while depending on the connection -P

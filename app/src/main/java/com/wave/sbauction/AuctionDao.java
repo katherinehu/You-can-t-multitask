@@ -2,6 +2,7 @@ package com.wave.sbauction;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface AuctionDao {
     @Query("SELECT * from Auction LIMIT 1")
     Auction getAnAuctionItem();
 
-    @Insert
+    @Insert (onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Auction...auctions) ;
 
 }
