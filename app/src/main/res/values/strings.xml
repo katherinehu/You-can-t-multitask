@@ -19,5 +19,5 @@
     how many threads your phone can simultaneously launch (along with your internet speed). Each thread retrieves the information, and stores it in a database
     on your phone. So at this point, if its slow, just blame your phone. As for how you know how far along the data retrieval is coming,
     well I have another thread monitoring how many of the times have been filled in the array I mentioned earlier. That is what\'s
-    causing the updates in the text you see above. Also, because it runs in parallel, you'll see the number suddenly jump up.</string>
+    causing the updates in the text you see above. Also, because it runs in parallel, you\'ll see the number suddenly jump up.</string>
 </resources>
