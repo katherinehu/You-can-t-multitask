@@ -98,7 +98,10 @@ public class RetrieveData extends AppCompatActivity {
                     auctionInfo = new JSONObject(firstPage);
                     timeUpdated = auctionInfo.getLong("lastUpdated");
                     totalPages = auctionInfo.getInt("totalPages");
-                    hasBeenRetrieved = new boolean[totalPages];
+                    hasBeenRetrieved = new boolean[totalPages+1];
+                    for(int i = 0; i<totalPages;++i){
+                        hasBeenRetrieved[i] = false;
+                    }
                     hasBeenRetrieved[0] = true;
                     startLooking = true;
                     totalAuctions = auctionInfo.getString("totalAuctions");
@@ -178,7 +181,7 @@ public class RetrieveData extends AppCompatActivity {
                 //Also, I checked, and you do need to retrieve the 52nd page if there are say, 52 pages.
                 for (int i = 1; i <= totalPages; ++i) {
                     Log.d(TAG,"Other pages started");
-                    new retrieveDataPerPage().execute(auctionURL + i);
+                    new retrieveDataPerPage().execute(auctionURL + i,Integer.toString(i));
                     //Store the data
 //                        final String filename2 = "auctionPage" + i;
 //                        new Thread(){
@@ -255,20 +258,29 @@ public class RetrieveData extends AppCompatActivity {
             public void run() {
                 super.run();
                 boolean finished = false;
-                while(!finished && startLooking){
-                    finished = true;
-                    for (boolean elements:hasBeenRetrieved) {
-                        if (!elements) {
-                            finished = false;
-                            break;
+                while(!finished){
+                    if (startLooking) {
+                        finished = true;
+                        for (boolean elements : hasBeenRetrieved) {
+                            if (!elements) {
+                                finished = false;
+                                break;
+                            }
+                        }
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                     }
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 }
+                Log.d(TAG,"finished");
                 startActivity(returnToMenu);
             }
         }.start();
@@ -309,7 +321,7 @@ public class RetrieveData extends AppCompatActivity {
             JSONArray allAuctions = null;
 
             try {
-                currentPageNumber = Integer.parseInt(params[0].substring(params[0].length()-1));
+                currentPageNumber = Integer.parseInt(params[1]);
                 HttpURLConnection connection = null;
                 BufferedReader reader = null;
                 String newPage =null;

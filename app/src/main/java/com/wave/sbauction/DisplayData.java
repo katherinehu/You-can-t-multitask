@@ -21,16 +21,27 @@ public class DisplayData extends AppCompatActivity {
         setContentView(R.layout.activity_display_data);
 
         //define database and get all data
-        AppDatabase currentAuctionsdb;
-        currentAuctionsdb = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "CurrentAuctionsDB")
-                .build();
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                AppDatabase currentAuctionsdb;
+                currentAuctionsdb = Room.databaseBuilder(getApplicationContext(),
+                        AppDatabase.class, "CurrentAuctionsDB")
+                        .build();
 
-        List<Auction> auctions = currentAuctionsdb.AuctionDao().getAllAuctions();
+                final List<Auction> auctions = currentAuctionsdb.AuctionDao().getAllAuctions();
 
-        rc = findViewById(R.id.my_recycler_view);
-        rc.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new AuctionAdapter(auctions);
-        rc.setAdapter(adapter);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        rc = findViewById(R.id.my_recycler_view);
+                        rc.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                        adapter = new AuctionAdapter(auctions);
+                        rc.setAdapter(adapter);
+                    }
+                });
+            }
+        }.start();
     }
 }
