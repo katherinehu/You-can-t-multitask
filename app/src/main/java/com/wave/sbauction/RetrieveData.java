@@ -29,7 +29,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class RetrieveData extends AppCompatActivity {
@@ -40,11 +39,9 @@ public class RetrieveData extends AppCompatActivity {
     TextView tvLoading;
     Button btnGoWithData, btnRedoData;
     ArrayList<Auction> auctions;
+    ArrayList<Boolean> hasBeenRetrieved = new ArrayList<>(0);
 
-
-    AppDatabase currentAuctionsdb = Room.databaseBuilder(getApplicationContext(),
-            AppDatabase.class, "CurrentAuctionsDB")
-            .build();
+    AppDatabase currentAuctionsdb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +56,6 @@ public class RetrieveData extends AppCompatActivity {
         btnRedoData = findViewById(R.id.btnRedoData);
         //endregion
 
-
         //Inform user what is happening
         Toast.makeText(getApplicationContext(), "Contacting Hypixel API...", Toast.LENGTH_SHORT).show();
 
@@ -69,6 +65,10 @@ public class RetrieveData extends AppCompatActivity {
             public void run() {
                 Looper.prepare();
                 super.run();
+
+                currentAuctionsdb = Room.databaseBuilder(getApplicationContext(),
+                        AppDatabase.class, "CurrentAuctionsDB")
+                        .build();
 
                 //regionGet first page of data, and use it to figure out how many pages we need. -P
                 final String auctionURL = "https://api.hypixel.net/skyblock/auctions?page=";
@@ -81,15 +81,18 @@ public class RetrieveData extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                //Store the auction info from the first page, use this later for the final set as well
-                JSONObject auctionInfo = null;
+
                 //Store the time retrieved
                 long timeUpdated = 0;
                 //Find out how many pages we need to eventually retrieve
                 int totalPages = 0;
                 //Total number of auctions
                 String totalAuctions = null;
+                //Store the auction info from the first page
+                JSONObject auctionInfo = null;
+
                 try {
+
                     auctionInfo = new JSONObject(firstPage);
                     timeUpdated = auctionInfo.getLong("lastUpdated");
                     totalPages = auctionInfo.getInt("totalPages");
@@ -106,14 +109,41 @@ public class RetrieveData extends AppCompatActivity {
                 }
 
                 //region get data and store it into auction objects -k
-                String uuid;
-                JSONArray allAuctions = null;
-
 
                 try {
-                    JSONObject value = null;
+                    JSONArray allAuctions = null;
                     allAuctions = auctionInfo.getJSONArray("auctions");
+                    for (int i = 0; i < allAuctions.length();i++) {
+                        JSONObject currentAuction;
+                        currentAuction = allAuctions.getJSONObject(i);
 
+                        //check if there is a bin, if not, set to false;
+                        boolean binFlag;
+                        try{
+                            binFlag = currentAuction.getBoolean("bin");
+                        }
+                        catch(Exception invalidReq){
+                            binFlag = false;
+                        }
+
+                        currentAuctionsdb.AuctionDao()
+                                .insertAll(new Auction(
+                                        currentAuction.getString("uuid"),
+                                        currentAuction.getString("auctioneer"),
+                                        currentAuction.getString("profile_id"),
+                                        currentAuction.getDouble("start"),
+                                        currentAuction.getDouble("end"),
+                                        currentAuction.getString("item_name"),
+                                        currentAuction.getString("item_lore"),
+                                        currentAuction.getString("extra"),
+                                        currentAuction.getString("category"),
+                                        currentAuction.getString("tier"),
+                                        currentAuction.getDouble("starting_bid"),
+                                        currentAuction.getBoolean("claimed"),
+                                        currentAuction.getDouble("highest_bid_amount"),
+                                        binFlag
+                                        ));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -136,53 +166,48 @@ public class RetrieveData extends AppCompatActivity {
                 String lastPageString = null;
                 ArrayList<String> remainingPages = new ArrayList<>();
 
+
                 //Starts at 1, because we already retrieved the 0 page as the first page.
                 //Also, I checked, and you do need to retrieve the 52nd page if there are say, 52 pages.
                 for (int i = 1; i <= totalPages; ++i) {
-                    try {
-                        final String newPage = new RetrieveAuctions().execute(auctionURL + i, Integer.toString(i*1000), totalAuctions).get();
-                        //Store the data
-                        final String filename2 = "auctionPage" + i;
-                        new Thread(){
-                            @Override
-                            public void run() {
-                                super.run();
-                                saveData(filename2, newPage);
-                            }
-                        }.start();
-                        //Save the last page to check if the times match up
-                        if(i == totalPages) {
-                            lastPageString = newPage;
-                        }
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    new retrieveDataPerPage().execute(auctionURL + i);
+                    //Store the data
+//                        final String filename2 = "auctionPage" + i;
+//                        new Thread(){
+//                            @Override
+//                            public void run() {
+//                                super.run();
+//                                saveData(filename2, newPage);
+//                            }
+//                        }.start();
+                    //Save the last page to check if the times match up
+//                        if(i == totalPages) {
+//                            lastPageString = newPage;
+//                        }
                 }
                 //endregion
 
                 //regionCheck to make sure data hasn't changed -P
-                JSONObject lastPage;
-                long timeUpdatedLast = 0;
-                try {
-                    //Get information from the last page of auction data, check to see if the time is the same
-                    lastPage = new JSONObject(lastPageString);
-                    timeUpdatedLast = lastPage.getLong("lastUpdated");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                if (timeUpdatedLast != timeUpdated) {
-                    //The server has updated since data retrieval has begun, give user option to try again.
-                    new ShowFailureButtons().execute();
-                    Toast.makeText(getApplicationContext(),"Data retrieval issue.",Toast.LENGTH_SHORT).show();
-                } else {
-                    //If no problems found, go back to the auction menu page.
-                    Toast.makeText(getApplicationContext(),"All data successfully retrieved.",Toast.LENGTH_SHORT).show();
-                    Intent goBack = new Intent(getApplicationContext(),AuctionMainMenu.class);
-                    startActivity(goBack);
-                }
+//                JSONObject lastPage;
+//                long timeUpdatedLast = 0;
+//                try {
+//                    //Get information from the last page of auction data, check to see if the time is the same
+//                    lastPage = new JSONObject(lastPageString);
+//                    timeUpdatedLast = lastPage.getLong("lastUpdated");
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                if (timeUpdatedLast != timeUpdated) {
+//                    //The server has updated since data retrieval has begun, give user option to try again.
+//                    new ShowFailureButtons().execute();
+//                    Toast.makeText(getApplicationContext(),"Data retrieval issue.",Toast.LENGTH_SHORT).show();
+//                } else {
+//                    //If no problems found, go back to the auction menu page.
+//                    Toast.makeText(getApplicationContext(),"All data successfully retrieved.",Toast.LENGTH_SHORT).show();
+//                    Intent goBack = new Intent(getApplicationContext(),AuctionMainMenu.class);
+//                    startActivity(goBack);
+//                }
                 //endregion
             }
         };
@@ -208,6 +233,8 @@ public class RetrieveData extends AppCompatActivity {
                     }
                 }
                 retrieveData.start();
+
+
             }
         }.start();
 
@@ -242,6 +269,70 @@ public class RetrieveData extends AppCompatActivity {
 
 
     }
+
+    //region async task to retrieve data for pages 1-last page -k
+    private class retrieveDataPerPage extends AsyncTask<String, Integer, Boolean> {
+        protected Boolean doInBackground(String... params) {
+
+            //Store the auction info from the first page
+            JSONObject auctionInfo = null;
+            JSONArray allAuctions = null;
+
+            try {
+                URL url = new URL(params[0]);
+                final String newPage = new RetrieveAuctions().execute(String.valueOf(url)).get();
+                auctionInfo = new JSONObject(newPage);
+                allAuctions = auctionInfo.getJSONArray("auctions");
+                for (int i = 0; i < allAuctions.length();i++) {
+                    JSONObject currentAuction;
+                    currentAuction = allAuctions.getJSONObject(i);
+
+                    //check if there is a bin value , if not, set to false;
+                    boolean binFlag;
+                    try{
+                        binFlag = currentAuction.getBoolean("bin");
+                    }
+                    catch(Exception invalidReq){
+                        binFlag = false;
+                    }
+
+                    currentAuctionsdb.AuctionDao()
+                            .insertAll(new Auction(
+                                    currentAuction.getString("uuid"),
+                                    currentAuction.getString("auctioneer"),
+                                    currentAuction.getString("profile_id"),
+                                    currentAuction.getDouble("start"),
+                                    currentAuction.getDouble("end"),
+                                    currentAuction.getString("item_name"),
+                                    currentAuction.getString("item_lore"),
+                                    currentAuction.getString("extra"),
+                                    currentAuction.getString("category"),
+                                    currentAuction.getString("tier"),
+                                    currentAuction.getDouble("starting_bid"),
+                                    currentAuction.getBoolean("claimed"),
+                                    currentAuction.getDouble("highest_bid_amount"),
+                                    binFlag
+                            ));
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
+
+        protected void onPostExecute(Boolean result) {
+            hasBeenRetrieved.add(result);
+        }
+    }
+    //endregion
 
     //Save files on the device -P
     public void saveData(String filename,String dataToSave) {
@@ -314,6 +405,7 @@ public class RetrieveData extends AppCompatActivity {
             try{
                 int currentlyLoaded = Integer.parseInt(currentPage);
                 int total = Integer.parseInt(totalAuctions);
+
                 if (total - currentlyLoaded > 1000) {
                     String loadingNotification = "Be patient while your phone gets ALL the auction data.\nLoaded " + currentPage + " of " + totalAuctions + " total auctions.";
                     tvLoading.setText(loadingNotification);

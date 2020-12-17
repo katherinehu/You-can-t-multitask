@@ -51,5 +51,8 @@ public class Auction {
 
     @ColumnInfo
     public boolean bin;
+
+    public Auction(String uuid, String auctioneer, String profile_id, double start, double end, String item_name, String item_lore, String extra, String category, String tier, double starting_bid, boolean claimed, double highest_bid_amount, boolean binFlag) {
+    }
 }
 

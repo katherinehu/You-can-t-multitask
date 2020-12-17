@@ -8,12 +8,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.ViewHolder> {
-    ArrayList<Auction> auctions;
+    List<Auction> auctions;
 
-    public AuctionAdapter(ArrayList<Auction> auctions) {
+    public AuctionAdapter(List<Auction> auctions) {
         this.auctions = auctions;
     }
 

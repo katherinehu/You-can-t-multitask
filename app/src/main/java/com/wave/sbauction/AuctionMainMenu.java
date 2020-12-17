@@ -40,10 +40,14 @@ public class AuctionMainMenu extends AppCompatActivity {
         btnGetData = findViewById(R.id.btnGetData);
 
         final Intent getData = new Intent(this,RetrieveData.class);
+        final Intent displayData = new Intent(this,DisplayData.class);
+
         btnGetData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(getData);
+                startActivity(displayData);
+
             }
         });
 
