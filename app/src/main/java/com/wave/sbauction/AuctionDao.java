@@ -17,7 +17,4 @@ public interface AuctionDao {
     @Insert
     void insertAll(Auction...auctions) ;
 
-
-
-
 }

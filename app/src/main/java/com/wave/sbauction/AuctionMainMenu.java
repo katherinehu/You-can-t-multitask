@@ -58,47 +58,47 @@ public class AuctionMainMenu extends AppCompatActivity {
         });
 
         //regionLoad all the JSON information from memory. Probably best not use this in this particular activity. -P
-        try {
-            //load the first page of the data, convert it into JSON
-            String auctionFirstPage = loadStringData("auctionPage0");
-            JSONObject auctionInfo = null;
-            try {
-                auctionInfo = new JSONObject(auctionFirstPage);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            //NOTE IT IS BETTER TO REPEAT THE PROCESS ONE AT A TIME RATHER THAN MAKE 1 HUGE FILE, I NOTICED IT RUNS OUT OF MEMORY
-            SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            int pagesRemaining = data.getInt("totalAuctionPages",0);
-            for (int page = 1; page <= pagesRemaining; ++page) {
-                JSONObject currentAuctionAllData = null;
-                try {
-                    String filename = "auctionPage" + page;
-                    currentAuctionAllData = new JSONObject(loadStringData(filename));
-                } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"whoopsie doopsie out of memory",Toast.LENGTH_SHORT).show();
-                }
-
-                JSONArray allAuctionsSoFar;
-                JSONArray justAuctionsFromCurrentPage;
-                JSONArray combined;
-                try {
-                    allAuctionsSoFar = auctionInfo.getJSONArray("auctions");
-                    justAuctionsFromCurrentPage = currentAuctionAllData.getJSONArray("auctions");
-                    combined = concatArray(allAuctionsSoFar,justAuctionsFromCurrentPage);
-                    auctionInfo.put("auctions",combined);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (Exception e) {
-            //This happens on the very first time you open the app, and you have no data to begin with.
-            startActivity(new Intent(getApplicationContext(),RetrieveData.class));
-        }
-
-
-        int e = 6;
+//        try {
+//            //load the first page of the data, convert it into JSON
+//            String auctionFirstPage = loadStringData("auctionPage0");
+//            JSONObject auctionInfo = null;
+//            try {
+//                auctionInfo = new JSONObject(auctionFirstPage);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//
+//            //NOTE IT IS BETTER TO REPEAT THE PROCESS ONE AT A TIME RATHER THAN MAKE 1 HUGE FILE, I NOTICED IT RUNS OUT OF MEMORY
+//            SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//            int pagesRemaining = data.getInt("totalAuctionPages",0);
+//            for (int page = 1; page <= pagesRemaining; ++page) {
+//                JSONObject currentAuctionAllData = null;
+//                try {
+//                    String filename = "auctionPage" + page;
+//                    currentAuctionAllData = new JSONObject(loadStringData(filename));
+//                } catch (JSONException e) {
+//                    Toast.makeText(getApplicationContext(),"whoopsie doopsie out of memory",Toast.LENGTH_SHORT).show();
+//                }
+//
+//                JSONArray allAuctionsSoFar;
+//                JSONArray justAuctionsFromCurrentPage;
+//                JSONArray combined;
+//                try {
+//                    allAuctionsSoFar = auctionInfo.getJSONArray("auctions");
+//                    justAuctionsFromCurrentPage = currentAuctionAllData.getJSONArray("auctions");
+//                    combined = concatArray(allAuctionsSoFar,justAuctionsFromCurrentPage);
+//                    auctionInfo.put("auctions",combined);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        } catch (Exception e) {
+//            //This happens on the very first time you open the app, and you have no data to begin with.
+//            startActivity(new Intent(getApplicationContext(),RetrieveData.class));
+//        }
+//
+//
+//        int e = 6;
         //endregion
 
     }

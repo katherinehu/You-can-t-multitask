@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -33,15 +34,16 @@ import java.util.concurrent.ExecutionException;
 
 public class RetrieveData extends AppCompatActivity {
 
-    private String TAG = this.getClass().getSimpleName();
+    private String TAG = "DataRetrieval";
     //private NoteViewModel noteViewModel;;
 
     TextView tvLoading;
     Button btnGoWithData, btnRedoData;
     ArrayList<Auction> auctions;
-    ArrayList<Boolean> hasBeenRetrieved = new ArrayList<>(0);
+    static boolean[] hasBeenRetrieved;
+    static boolean startLooking = false;
 
-    AppDatabase currentAuctionsdb;
+    static AppDatabase currentAuctionsdb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,10 @@ public class RetrieveData extends AppCompatActivity {
         setContentView(R.layout.activity_retrieve_data);
 
         setTitle("Load Auction Information");
+
+        currentAuctionsdb = Room.databaseBuilder(getApplicationContext(),
+                AppDatabase.class, "CurrentAuctionsDB")
+                .build();
 
         //regionDeclare UI elements
         tvLoading = findViewById(R.id.tvLoadingNotification);
@@ -65,11 +71,7 @@ public class RetrieveData extends AppCompatActivity {
             public void run() {
                 Looper.prepare();
                 super.run();
-
-                currentAuctionsdb = Room.databaseBuilder(getApplicationContext(),
-                        AppDatabase.class, "CurrentAuctionsDB")
-                        .build();
-
+                Log.d(TAG,"Data retreival started first page");
                 //regionGet first page of data, and use it to figure out how many pages we need. -P
                 final String auctionURL = "https://api.hypixel.net/skyblock/auctions?page=";
                 String firstPage = null;
@@ -96,6 +98,9 @@ public class RetrieveData extends AppCompatActivity {
                     auctionInfo = new JSONObject(firstPage);
                     timeUpdated = auctionInfo.getLong("lastUpdated");
                     totalPages = auctionInfo.getInt("totalPages");
+                    hasBeenRetrieved = new boolean[totalPages];
+                    hasBeenRetrieved[0] = true;
+                    startLooking = true;
                     totalAuctions = auctionInfo.getString("totalAuctions");
 
                     //save time first page is retrieved
@@ -145,6 +150,7 @@ public class RetrieveData extends AppCompatActivity {
                                         binFlag
                                         ));
                     }
+                    Log.d(TAG,"First page, stuff stored in database");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -171,6 +177,7 @@ public class RetrieveData extends AppCompatActivity {
                 //Starts at 1, because we already retrieved the 0 page as the first page.
                 //Also, I checked, and you do need to retrieve the 52nd page if there are say, 52 pages.
                 for (int i = 1; i <= totalPages; ++i) {
+                    Log.d(TAG,"Other pages started");
                     new retrieveDataPerPage().execute(auctionURL + i);
                     //Store the data
 //                        final String filename2 = "auctionPage" + i;
@@ -234,14 +241,38 @@ public class RetrieveData extends AppCompatActivity {
                     }
                 }
                 retrieveData.start();
-
-
+                Log.d(TAG,"database cleared");
             }
         }.start();
 
 
         //endregion
 
+        //regionThread to exit activity once all data has been retrieved -P
+        final Intent returnToMenu = new Intent(this,AuctionMainMenu.class);
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                boolean finished = false;
+                while(!finished && startLooking){
+                    finished = true;
+                    for (boolean elements:hasBeenRetrieved) {
+                        if (!elements) {
+                            finished = false;
+                            break;
+                        }
+                    }
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                startActivity(returnToMenu);
+            }
+        }.start();
+        //endregion
 
         //region Buttons used for data problems -P
         //first make invisible, will become visible if needed
@@ -266,13 +297,11 @@ public class RetrieveData extends AppCompatActivity {
             }
         });
         //endregion
-
-
-
     }
 
     //region async task to retrieve data for pages 1-last page -k
     private class retrieveDataPerPage extends AsyncTask<String, Integer, Boolean> {
+        int currentPageNumber;
         protected Boolean doInBackground(String... params) {
 
             //Store the auction info from the first page
@@ -280,8 +309,38 @@ public class RetrieveData extends AppCompatActivity {
             JSONArray allAuctions = null;
 
             try {
-                URL url = new URL(params[0]);
-                final String newPage = new RetrieveAuctions().execute(String.valueOf(url)).get();
+                currentPageNumber = Integer.parseInt(params[0].substring(params[0].length()-1));
+                HttpURLConnection connection = null;
+                BufferedReader reader = null;
+                String newPage =null;
+                try {
+                    URL url = new URL(params[0]);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.connect();
+                    InputStream stream = connection.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(stream));
+                    StringBuffer buffer = new StringBuffer();
+                    String line = "";
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line + "\n");
+                    }
+                    newPage = buffer.toString();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                    try {
+                        if (reader != null) {
+                            reader.close();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 auctionInfo = new JSONObject(newPage);
                 allAuctions = auctionInfo.getJSONArray("auctions");
                 for (int i = 0; i < allAuctions.length();i++) {
@@ -315,13 +374,8 @@ public class RetrieveData extends AppCompatActivity {
                                     binFlag
                             ));
                 }
+                Log.d(TAG,"Page finished: " + currentPageNumber);
 
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -330,7 +384,7 @@ public class RetrieveData extends AppCompatActivity {
         }
 
         protected void onPostExecute(Boolean result) {
-            hasBeenRetrieved.add(result);
+            hasBeenRetrieved[currentPageNumber] = result;
         }
     }
     //endregion
