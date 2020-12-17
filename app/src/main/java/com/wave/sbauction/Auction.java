@@ -8,7 +8,23 @@ import androidx.room.PrimaryKey;
 @Entity
 public class Auction {
 
-    // create constructors (ctr-N)
+    public Auction(@NonNull String uuid, String auctioneer, String profile_id, double start, double end, String item_name, String item_lore, String extra, String category, String tier, double starting_bid, boolean claimed, double highest_bid_amount, boolean bin) {
+        this.uuid = uuid;
+        this.auctioneer = auctioneer;
+        this.profile_id = profile_id;
+        this.start = start;
+        this.end = end;
+        this.item_name = item_name;
+        this.item_lore = item_lore;
+        this.extra = extra;
+        this.category = category;
+        this.tier = tier;
+        this.starting_bid = starting_bid;
+        this.claimed = claimed;
+        this.highest_bid_amount = highest_bid_amount;
+        this.bin = bin;
+    }
+
     @NonNull
     @PrimaryKey
     public String uuid;
@@ -20,10 +36,10 @@ public class Auction {
     public String profile_id;
 
     @ColumnInfo
-    public Double start;
+    public double start;
 
     @ColumnInfo
-    public Double end;
+    public double end;
 
     @ColumnInfo
     public String item_name;
@@ -41,18 +57,17 @@ public class Auction {
     public String tier;
 
     @ColumnInfo
-    public Double starting_bid;
+    public double starting_bid;
 
     @ColumnInfo
     public boolean claimed;
 
     @ColumnInfo
-    public Double highest_bid_amount;
+    public double highest_bid_amount;
 
     @ColumnInfo
     public boolean bin;
 
-    public Auction(String uuid, String auctioneer, String profile_id, double start, double end, String item_name, String item_lore, String extra, String category, String tier, double starting_bid, boolean claimed, double highest_bid_amount, boolean binFlag) {
-    }
+
 }
 
