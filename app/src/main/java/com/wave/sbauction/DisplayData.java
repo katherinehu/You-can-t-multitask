@@ -6,6 +6,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +17,16 @@ public class DisplayData extends AppCompatActivity {
 
     RecyclerView rc;
     RecyclerView.Adapter adapter;
+    RadioButton checkedButton;
+    RadioGroup rdgSort;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_data);
+
+        //define ui elems
+        rdgSort = findViewById(R.id.rdgSort);
 
         //define database and get all data
         new Thread(){
@@ -43,5 +51,13 @@ public class DisplayData extends AppCompatActivity {
                 });
             }
         }.start();
+    }
+
+    //check which radio button is checked
+    public void checkButton(View v) {
+
+        int radioId = rdgSort.getCheckedRadioButtonId();
+        checkedButton = findViewById(radioId);
+
     }
 }

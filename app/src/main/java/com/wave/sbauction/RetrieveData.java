@@ -417,26 +417,26 @@ public class RetrieveData extends AppCompatActivity {
     }
     //endregion
 
-    //Save files on the device -P
-    public void saveData(String filename,String dataToSave) {
-        FileOutputStream fos = null;
-        try {
-            fos = openFileOutput(filename, Context.MODE_PRIVATE);
-            fos.write(dataToSave.getBytes());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (fos!= null){
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+//    //Save files on the device -P
+//    public void saveData(String filename,String dataToSave) {
+//        FileOutputStream fos = null;
+//        try {
+//            fos = openFileOutput(filename, Context.MODE_PRIVATE);
+//            fos.write(dataToSave.getBytes());
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (fos!= null){
+//                try {
+//                    fos.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//    }
 
     //This code was mostly taken from online, I looked up how to retrieve text from a URL. The API that
     //Hypixel uses has a website that has everything needed stored in a text JSON. This just goes there and takes the data
