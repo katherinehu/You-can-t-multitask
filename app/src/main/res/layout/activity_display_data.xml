@@ -34,11 +34,9 @@
                 android:id="@+id/tvSort"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:text="Sort by:"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                tools:layout_editor_absoluteX="182dp"
+                tools:layout_editor_absoluteY="16dp" />
 
             <RadioGroup
                 android:id="@+id/rdgSort"
@@ -52,118 +50,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Alphabetical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvSort" />
+                tools:layout_editor_absoluteY="36dp" />
 
             <RadioButton
                 android:id="@+id/rdPriceLH"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Price - Low to High"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvSort" />
+                tools:layout_editor_absoluteX="262dp"
+                tools:layout_editor_absoluteY="36dp" />
 
             <RadioButton
                 android:id="@+id/rdEnd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ending soon"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rdAlpha" />
+                tools:layout_editor_absoluteX="1dp"
+                tools:layout_editor_absoluteY="68dp" />
 
             <RadioButton
                 android:id="@+id/rdPriceHL"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Price - High to Low"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rdPriceLH" />
+                tools:layout_editor_absoluteX="262dp"
+                tools:layout_editor_absoluteY="68dp" />
 
             <TextView
                 android:id="@+id/textView7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:text="Filter by:"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.494"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rdPriceHL" />
-
-            <Switch
-                android:id="@+id/swCommon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Common"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView8" />
-
-            <Switch
-                android:id="@+id/swUncommon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Uncommon"
-                app:layout_constraintTop_toBottomOf="@+id/textView8"
-                tools:layout_editor_absoluteX="0dp" />
-
-            <Switch
-                android:id="@+id/swRare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rare"
-                app:layout_constraintTop_toBottomOf="@+id/textView8"
-                tools:layout_editor_absoluteX="0dp" />
-
-            <Switch
-                android:id="@+id/swEpic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Epic"
-                app:layout_constraintTop_toBottomOf="@+id/textView8"
-                tools:layout_editor_absoluteX="0dp" />
-
-            <Switch
-                android:id="@+id/swLegendary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Legendary"
-                app:layout_constraintTop_toBottomOf="@+id/textView8"
-                tools:layout_editor_absoluteX="0dp" />
-
-            <Switch
-                android:id="@+id/swMythic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="112dp"
-                android:layout_marginEnd="140dp"
-                android:text="Mythic"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView8" />
-
-            <Switch
-                android:id="@+id/swSupreme"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Supreme"
-                app:layout_constraintTop_toBottomOf="@+id/textView8"
-                tools:layout_editor_absoluteX="0dp" />
-
-            <Switch
-                android:id="@+id/swSpecial"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Special"
-                app:layout_constraintTop_toBottomOf="@+id/textView8"
-                tools:layout_editor_absoluteX="0dp" />
-
-            <Switch
-                android:id="@+id/swVerySpecial"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Very Special"
-                app:layout_constraintTop_toBottomOf="@+id/textView8"
-                tools:layout_editor_absoluteX="0dp" />
+                tools:layout_editor_absoluteX="177dp"
+                tools:layout_editor_absoluteY="112dp" />
 
 
             <TextView
@@ -171,8 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rarity"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView7" />
+                tools:layout_editor_absoluteY="131dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
