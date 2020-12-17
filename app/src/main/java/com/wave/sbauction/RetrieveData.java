@@ -181,7 +181,7 @@ public class RetrieveData extends AppCompatActivity {
                 //Also, I checked, and you do need to retrieve the 52nd page if there are say, 52 pages.
                 for (int i = 1; i <= totalPages; ++i) {
                     Log.d(TAG,"Other pages started");
-                    new retrieveDataPerPage().execute(auctionURL + i,Integer.toString(i));
+                    new retrieveDataPerPage().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,auctionURL + i,Integer.toString(i));
                     //Store the data
 //                        final String filename2 = "auctionPage" + i;
 //                        new Thread(){
@@ -312,7 +312,7 @@ public class RetrieveData extends AppCompatActivity {
     }
 
     //region async task to retrieve data for pages 1-last page -k
-    private class retrieveDataPerPage extends AsyncTask<String, Integer, Boolean> {
+    private static class retrieveDataPerPage extends AsyncTask<String, Integer, Boolean> {
         int currentPageNumber;
         protected Boolean doInBackground(String... params) {
 
@@ -386,7 +386,7 @@ public class RetrieveData extends AppCompatActivity {
                                     binFlag
                             ));
                 }
-                Log.d(TAG,"Page finished: " + currentPageNumber);
+                Log.d("DataRetrieval","Page finished: " + currentPageNumber);
 
             } catch (JSONException e) {
                 e.printStackTrace();
