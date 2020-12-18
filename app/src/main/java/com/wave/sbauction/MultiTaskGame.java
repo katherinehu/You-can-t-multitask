@@ -62,6 +62,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
     Button btnTime1, btnTime2, btnTime3;
     ProgressBar pbTime;
 
+    Button btnPress;
+    ProgressBar pbPress;
+
     boolean clicked_green = false;
     boolean clicked_blue = false;
     boolean clicked_red = false;
@@ -81,6 +84,10 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
     static int button2Number = 4;
     static int button3Number = 9;
     static boolean completedTimer = false;
+
+    //Pressing game
+    static double timeLeft = 30;
+    static double buttonRate = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +117,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         btnTime2 = findViewById(R.id.btnTime2);
         btnTime3 = findViewById(R.id.btnTime3);
         pbTime = findViewById(R.id.pbTimer);
+
+        btnPress = findViewById(R.id.btnPress);
+        pbPress = findViewById(R.id.pbPress);
         //endregion
 
         //regionDetermine which games to play
@@ -861,6 +871,89 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         });
         //endregion
 
+        //regionPress button game -P
+        //The button will change colors, and while you hold it, it either goes up, or goes down.
+
+        //regionRun the game
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                while (!lostGame && !pressDisabled){
+                    timeLeft -= 0.1;
+                    if (btnPress.isPressed()) {
+                        timeLeft += buttonRate;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnPress.setText("||||||||||||||||||||");
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnPress.setText("");
+                            }
+                        });
+                    }
+                    if (timeLeft < 0) {
+                        lostGame = true;
+                    }
+                    pbPress.setProgress((int)(100*(timeLeft/30)));
+                    if (timeLeft > 30) {
+                        timeLeft = 30;
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+        //endregion
+
+        //regionChange the button property
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                int negativeCount = 0;
+                while (!lostGame && !pressDisabled){
+                    if (negativeCount < 3.0) {
+                        buttonRate = (double)(RandRange(-100,100))/100;
+                        if (buttonRate < 0) {
+                            ++negativeCount;
+                        } else {
+                            negativeCount = 0;
+                        }
+                    } else {
+                        negativeCount = 0;
+                        buttonRate = 0.5;
+                    }
+                    //Change the button to a new random color so the user knows something happened
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            int red = RandRange(0,255);
+                            int green = RandRange(0,255);
+                            int blue = RandRange(0,255);
+                            int color = Color.rgb(red,green,blue);
+                            btnPress.setBackgroundColor(color);
+                        }
+                    });
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+        //endregion
+
+        //endregion
     }
 
 
