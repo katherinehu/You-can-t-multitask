@@ -10,11 +10,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 
 public class MultiTaskMainMenu extends AppCompatActivity {
 
     Button btnStartGame;
     CheckBox checkTilt, checkPress, checkColor, checkTimerReaction, checkBars;
+    TextView tvHighScore;
 
     /*
     Gives you the option to start the game, and adjust any gameplay settings right on the screen.
@@ -27,7 +29,11 @@ public class MultiTaskMainMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multi_task_main_menu);
 
+        //Hide bar at the top
+        this.getSupportActionBar().hide();
+
         //regionDeclare UI elements
+        tvHighScore = findViewById(R.id.tvHighScore);
         btnStartGame = findViewById(R.id.btnPlayGame);
         checkTilt = findViewById(R.id.checkTilt);
         checkPress = findViewById(R.id.checkPress);
@@ -46,8 +52,7 @@ public class MultiTaskMainMenu extends AppCompatActivity {
         //endregion
 
         //regionGive user option to disable certain games -P
-
-        SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        final SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final SharedPreferences.Editor editor = data.edit();
         boolean tiltDisabled = data.getBoolean("tiltDisabled",false);
         boolean pressDisabled = data.getBoolean("pressDisabled",false);
@@ -159,5 +164,64 @@ public class MultiTaskMainMenu extends AppCompatActivity {
         });
         //endregion
 
+        //regionDisplay high score
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                while(true){
+                    long highScore = data.getLong("highScore",0);
+                    String display = "High Score: " + addCommas(highScore) + "\n";
+                    int gamesDisabled = data.getInt("gamesDisabled",0);
+                    switch (gamesDisabled){
+                        case 1:
+                            display += "\nOh I'm sure that'll help.";
+                            break;
+                        case 2:
+                            display += "\nCall it a compromise?";
+                            break;
+                        case 3:
+                            display += "\nAccept your human limitations.";
+                            break;
+                        case 4:
+                            display += "\nYou can't multitask. Just as expected.";
+                            break;
+                        case 5:
+                            display += "\nAh yes, just give up. Give into your inferiority.";
+                            break;
+                        default:
+                            display += "\nFeeling brave, are you?.\nLet's see how long it lasts.";
+                    }
+                    final String finalDisplay = display;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tvHighScore.setText(finalDisplay);
+                        }
+                    });
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+        //endregion
+
+    }
+
+    //Add commas to numbers -P
+    public String addCommas(long inputNumber){
+        String digits = Long.toString(inputNumber);
+        StringBuilder result = new StringBuilder();
+        for (int i=1; i <= digits.length(); ++i) {
+            char ch = digits.charAt(digits.length() - i);
+            if (i % 3 == 1 && i > 1) {
+                result.insert(0, ",");
+            }
+            result.insert(0, ch);
+        }
+        return result.toString();
     }
 }
