@@ -218,11 +218,17 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                 SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 final SharedPreferences.Editor editor = data.edit();
                 int gamesDisabled = data.getInt("gamesDisabled",0);
-                long timeSurvived = (long)timeElapsed;
+                long timeSurvived = (long)(timeElapsed * 10);
                 long score = 1;
                 for(int i = 0; i < (5-gamesDisabled); ++i){
                     score = score * timeSurvived;
                 }
+
+                if(score == (long) Math.pow(2,64)){
+                    //Literally win the game, because the score doesn't go any higher.
+                    //Ensure the player gets the achievement, not that this would ever happen
+                }
+
                 long highScore = data.getLong("highScore",0);
                 if (score > highScore) {
                     editor.putLong("highScore",score);
@@ -939,9 +945,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                             @Override
                             public void run() {
                                 if (buttonRate > 0) {
-                                    btnPress.setText(">>>>>>>>>>>>>>>>>>>>>>>>>");
+                                    btnPress.setText(">>>>>>>>>>>>>>>>");
                                 } else {
-                                    btnPress.setText("<<<<<<<<<<<<<<<<<<<<<<<<<");
+                                    btnPress.setText("<<<<<<<<<<<<<<<<<<<<");
                                 }
                             }
                         });
