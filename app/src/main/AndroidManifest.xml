@@ -18,7 +18,8 @@
             android:name=".MultiTaskGame"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-        <activity android:name=".MultiTaskMainMenu" />
+        <activity android:name=".MultiTaskMainMenu"
+            android:screenOrientation="landscape" />
         <activity android:name=".AuctionMainMenu" />
         <activity android:name=".Welcome" />
         <activity android:name=".MainActivity">

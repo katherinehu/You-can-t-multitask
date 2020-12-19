@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MultiTaskMainMenu">
+
+    <Button
+        android:id="@+id/btnPlayGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Start Game"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkBars" />
+
+    <CheckBox
+        android:id="@+id/checkBars"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disable Bar Balance"
+        app:layout_constraintBottom_toTopOf="@+id/btnPlayGame"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkTimerReaction" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Turn off games below"
+        app:layout_constraintBottom_toTopOf="@+id/checkTilt"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvHighScore" />
+
+    <CheckBox
+        android:id="@+id/checkTilt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disable Tilting Toil"
+        app:layout_constraintBottom_toTopOf="@+id/checkPress"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <CheckBox
+        android:id="@+id/checkPress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disable Press Perplexion"
+        app:layout_constraintBottom_toTopOf="@+id/checkColor"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkTilt" />
+
+    <CheckBox
+        android:id="@+id/checkColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disable Color Confusion"
+        app:layout_constraintBottom_toTopOf="@+id/checkTimerReaction"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkPress" />
+
+    <CheckBox
+        android:id="@+id/checkTimerReaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disable Digit Determination"
+        app:layout_constraintBottom_toTopOf="@+id/checkBars"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkColor" />
+
+    <TextView
+        android:id="@+id/tvHighScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="High Score + Roast"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Instructions:\nTilting Toil: Tilt your phone in the direction of the arrows until they both become check marks. Do so before you run out of time, and you get more time.\nPress Perplexion: When you hold down the button, it either decreases how much time you have left, or increases it. Press it to find out.\nColor Confusion: When it says TEXT, read what the word says, and hit the corresponding button. If it says COLOR, figure out what color the text is, and hit the corresponding button.\nDigit Determination: Three buttons each have a digit on them. When the timer has one of the digits in it, hit the right button to get more time.\nBar Balance: Try to keep both bars near the middle. Use the sliders to move it more in either direction. If the bars hit either end, you lose."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline8"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,11 +17,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.cardview.widget.CardView;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -43,7 +44,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
     boolean lostGame = false;
     static double timeElapsed = 0;
 
-    Button btnRestart;
+    CardView cardGameOver;
+    Button btnRestart, btnQuit;
+    TextView txtGameInfo;
 
     TextView tvTimer;
     ProgressBar pbTilt;
@@ -61,6 +64,12 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
 
     Button btnTime1, btnTime2, btnTime3;
     ProgressBar pbTime;
+
+    Button btnPress;
+    ProgressBar pbPress;
+
+    SeekBar sb1, sb2;
+    ProgressBar pbBar1, pbBar2;
 
     boolean clicked_green = false;
     boolean clicked_blue = false;
@@ -82,6 +91,16 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
     static int button3Number = 9;
     static boolean completedTimer = false;
 
+    //Pressing game
+    static double timeLeft = 30;
+    static double buttonRate = 0;
+
+    //Balancing game
+    static int barRate1;
+    static int barRate2;
+    static int bar1 = 500;
+    static int bar2 = 500;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +110,9 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         tvTimer = findViewById(R.id.tvTimer);
 
         btnRestart = findViewById(R.id.btnRestart);
+        btnQuit = findViewById(R.id.btnQuit);
+        cardGameOver = findViewById(R.id.cardGameOver);
+        txtGameInfo = findViewById(R.id.txtGameInfo);
 
         pbTilt = findViewById(R.id.pbTilt);
         ivLeftRight = findViewById(R.id.ivLeftRight);
@@ -110,6 +132,14 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         btnTime2 = findViewById(R.id.btnTime2);
         btnTime3 = findViewById(R.id.btnTime3);
         pbTime = findViewById(R.id.pbTimer);
+
+        btnPress = findViewById(R.id.btnPress);
+        pbPress = findViewById(R.id.pbPress);
+
+        sb1 = findViewById(R.id.sb1);
+        sb2 = findViewById(R.id.sb2);
+        pbBar1 = findViewById(R.id.pbBar);
+        pbBar2 = findViewById(R.id.pbBar2);
         //endregion
 
         //regionDetermine which games to play
@@ -141,7 +171,7 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                         }
                     });
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(10);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -150,13 +180,20 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         }.start();
         //endregion
 
-        //regionShow a restart button if the user loses the game
+        //regionWhat happens once the game is over
         btnRestart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getApplicationContext(),MultiTaskGame.class));
             }
         });
+        btnQuit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(),MultiTaskMainMenu.class));
+            }
+        });
+
         new Thread(){
             @Override
             public void run() {
@@ -168,12 +205,43 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
                         e.printStackTrace();
                     }
                 }
+                timeLeft = 30;
+                bar1 = 500;
+                bar2 = 500;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        btnRestart.setVisibility(View.VISIBLE);
+                        cardGameOver.setVisibility(View.VISIBLE);
                     }
                 });
+                //Calculate score, store it if it is a high score
+                SharedPreferences data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                final SharedPreferences.Editor editor = data.edit();
+                int gamesDisabled = data.getInt("gamesDisabled",0);
+                long timeSurvived = (long)(timeElapsed * 10);
+                long score = 1;
+                for(int i = 0; i < (5-gamesDisabled); ++i){
+                    score = score * timeSurvived;
+                }
+
+                if(score == (long) Math.pow(2,64)){
+                    //Literally win the game, because the score doesn't go any higher.
+                    //Ensure the player gets the achievement, not that this would ever happen
+                }
+
+                long highScore = data.getLong("highScore",0);
+                if (score > highScore) {
+                    editor.putLong("highScore",score);
+                    editor.commit();
+                }
+                final String display = "Score: " + addCommas(score) + "\nHigh Score: " + addCommas(highScore);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        txtGameInfo.setText(display);
+                    }
+                });
+                timeElapsed = 0;
             }
         }.start();
         //endregion
@@ -861,6 +929,168 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         });
         //endregion
 
+        //regionPress button game -P
+        //The button will change colors, and while you hold it, it either goes up, or goes down.
+
+        //regionRun the game
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                while (!lostGame && !pressDisabled){
+                    timeLeft -= 0.1;
+                    if (btnPress.isPressed()) {
+                        timeLeft += buttonRate;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (buttonRate > 0) {
+                                    btnPress.setText(">>>>>>>>>>>>>>>>");
+                                } else {
+                                    btnPress.setText("<<<<<<<<<<<<<<<<<<<<");
+                                }
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnPress.setText("");
+                            }
+                        });
+                    }
+                    if (timeLeft < 0) {
+                        lostGame = true;
+                    }
+                    pbPress.setProgress((int)(100*(timeLeft/30)));
+                    if (timeLeft > 30) {
+                        timeLeft = 30;
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+        //endregion
+
+        //regionChange the button property
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                int negativeCount = 0;
+                while (!lostGame && !pressDisabled){
+                    if (negativeCount < 3.0) {
+                        buttonRate = (double)(RandRange(-100,100))/100;
+                        if (buttonRate < 0) {
+                            ++negativeCount;
+                        } else {
+                            negativeCount = 0;
+                        }
+                    } else {
+                        negativeCount = 0;
+                        buttonRate = 0.5;
+                    }
+                    //Change the button to a new random color so the user knows something happened
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            int red = RandRange(0,255);
+                            int green = RandRange(0,255);
+                            int blue = RandRange(0,255);
+                            int color = Color.rgb(red,green,blue);
+                            btnPress.setBackgroundColor(color);
+                        }
+                    });
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+        //endregion
+
+        //endregion
+
+        //region Bar balancing game -P
+        //regionGame part that user controls, and increments progressbars
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                //Put both seekbars in the middle
+                sb1.setProgress(50);
+                sb2.setProgress(50);
+                //Put both bars in center
+                pbBar1.setProgress(50);
+                pbBar2.setProgress(50);
+
+                while(!lostGame && !barsDisabled) {
+                    //The user rate is determined by where the user puts the button
+                    int userRate1 = (sb1.getProgress() - 50) / 5;
+                    int userRate2 = (sb2.getProgress() - 50) / 5;
+                    //barRate is determined in the next thread, and randomly changes, so the user
+                    //has to constantly change up the bars so it doesn't reach the ends
+                    bar1 += userRate1 + barRate1;
+                    bar2 += userRate2 + barRate2;
+
+                    //Show progress bars so the user knows where the bars are at
+                    pbBar1.setProgress((int) (100.0*((double)bar1/(double)1000)));
+                    pbBar2.setProgress((int) (100.0*((double)bar2/(double)1000)));
+
+                    //End the game if the bars reach either end
+                    if (bar1 < 0 || bar1 > 1000){
+                        lostGame = true;
+                    }
+
+                    if(bar2 < 0 || bar2 > 1000) {
+                        lostGame = true;
+                    }
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+        //endregion
+
+        //regionChange up the rates every so often
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                while(!lostGame){
+                    if (new Random().nextBoolean()) {
+                        barRate1 = RandRange(-7,7,"min");
+                    } else {
+                        barRate1 = RandRange(-7,7,"max");
+                    }
+
+                    if (new Random().nextBoolean()) {
+                        barRate2 = RandRange(-7,7,"min");
+                    } else {
+                        barRate2 = RandRange(-7,7,"max");
+                    }
+
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+        //endregion
+
+        //endregion
     }
 
 
@@ -959,17 +1189,17 @@ public class MultiTaskGame extends Activity implements SensorEventListener {
         return bd.doubleValue();
     }
 
-    //Can't update views without using asynctasks (turns out I'm wrong)
-    class updateTimer extends AsyncTask<String,String,String>{
-        @Override
-        protected String doInBackground(String... strings) {
-            return strings[0];
+    //Add commas to numbers -P
+    public String addCommas(long inputNumber){
+        String digits = Long.toString(inputNumber);
+        StringBuilder result = new StringBuilder();
+        for (int i=1; i <= digits.length(); ++i) {
+            char ch = digits.charAt(digits.length() - i);
+            if (i % 3 == 1 && i > 1) {
+                result.insert(0, ",");
+            }
+            result.insert(0, ch);
         }
-
-        @Override
-        protected void onPostExecute(String time) {
-            super.onPostExecute(time);
-            tvTimer.setText(time);
-        }
+        return result.toString();
     }
 }
