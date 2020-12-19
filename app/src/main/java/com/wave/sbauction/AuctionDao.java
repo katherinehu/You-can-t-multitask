@@ -15,6 +15,7 @@ public interface AuctionDao {
     @Query("SELECT * from Auction LIMIT 1")
     Auction getAnAuctionItem();
 
+
     @Insert (onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Auction...auctions) ;
 
