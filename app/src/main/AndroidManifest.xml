@@ -12,13 +12,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DisplayData"></activity>
+        <activity android:name=".GoogleSignInActivity"></activity>
+        <activity android:name=".DisplayData" />
         <activity android:name=".RetrieveData" />
         <activity
             android:name=".MultiTaskGame"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-        <activity android:name=".MultiTaskMainMenu"
+        <activity
+            android:name=".MultiTaskMainMenu"
             android:screenOrientation="landscape" />
         <activity android:name=".AuctionMainMenu" />
         <activity android:name=".Welcome" />
@@ -29,6 +31,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/app_id" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
