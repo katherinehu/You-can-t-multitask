@@ -1,0 +1,6 @@
+If you complete an achievement, that information is sent out so that you can get the achievement for 
+Google Play Games. 
+Your high scores are sent to Google Play Games. You may opt out of this.
+If you chose to make a public profile for Google Play Games, other people can see your score, if it is not public, other people cannot.
+This app will access your phone's accelerometer, but won't store that information.
+All settings information for this app is stored locally. If you delete the app, the information is gone.
