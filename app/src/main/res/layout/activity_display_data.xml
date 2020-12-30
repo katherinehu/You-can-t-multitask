@@ -52,7 +52,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cardSearchOptions"
         android:layout_width="match_parent"
-        android:layout_height="700dp"
+        android:layout_height="wrap_content"
         android:visibility="visible"
         app:cardCornerRadius="12dp"
         app:cardElevation="8dp"
@@ -62,7 +62,6 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cardSort"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/accent"
@@ -70,9 +69,9 @@
             android:scrollbarAlwaysDrawVerticalTrack="true">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardView2"
+                android:id="@+id/cardSort"
                 android:layout_width="200dp"
-                android:layout_height="300dp"
+                android:layout_height="250dp"
                 app:layout_constraintEnd_toStartOf="@+id/cardView"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +79,7 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="@color/lightgrey">
 
                     <TextView
@@ -148,11 +147,11 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView"
                 android:layout_width="200dp"
-                android:layout_height="300dp"
+                android:layout_height="wrap_content"
                 android:background="@drawable/rounded_bottom_corners"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/cardView2"
+                app:layout_constraintStart_toEndOf="@+id/cardSort"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -166,7 +165,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="32dp"
                         android:layout_marginTop="16dp"
-                        android:text="Include:"
+                        android:text="Filter by Enchantment:"
                         android:textColor="#FFFFFF"
                         android:textColorHighlight="#FFFFFF"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -180,92 +179,77 @@
                         android:layout_marginLeft="6dp"
                         android:layout_marginTop="16dp"
                         android:hint="Enchantment NAME"
-                        android:text="Enchantment:"
+                        android:text="Include Enchantment:"
                         android:textColor="#FFFFFF"
                         android:textColorHighlight="#FFFFFF"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
                     <EditText
-                        android:id="@+id/etEnchantment"
+                        android:id="@+id/etInEnchantment"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:editable="true"
                         android:ems="10"
                         android:inputType="textPersonName"
                         android:textColor="#FFFFFF"
                         android:textColorHighlight="#FFFFFF"
                         android:textSize="10sp"
-                        app:layout_constraintEnd_toStartOf="@+id/btnAdd"
+                        app:layout_constraintEnd_toStartOf="@+id/btnInAdd"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
+                    <ListView
+                        android:id="@+id/lvInEnchantments"
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/etInEnchantment" />
+
                     <Button
-                        android:id="@+id/btnAdd"
-                        android:layout_width="68dp"
-                        android:layout_height="44dp"
+                        android:id="@+id/btnInAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="Add"
                         android:textColor="#FFFFFF"
                         android:textColorHighlight="#FFFFFF"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/etEnchantment"
+                        app:layout_constraintStart_toEndOf="@+id/etInEnchantment"
                         app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
                     <TextView
-                        android:id="@+id/textView9"
+                        android:id="@+id/textView11"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="6dp"
-                        android:layout_marginTop="16dp"
-                        android:text="Pet Level (Low):"
+                        android:layout_marginStart="8dp"
+                        android:text="Exclude Enchantment"
                         android:textColor="#FFFFFF"
-                        android:textColorHighlight="#FFFFFF"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/etEnchantment" />
+                        app:layout_constraintTop_toBottomOf="@+id/lvInEnchantments" />
 
                     <EditText
-                        android:id="@+id/etPetLow"
+                        android:id="@+id/etExEnchantment"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="6dp"
                         android:layout_marginTop="8dp"
                         android:ems="10"
-                        android:hint="0"
                         android:inputType="textPersonName"
-                        android:textColor="#FFFFFF"
-                        android:textColorHighlight="#FFFFFF"
                         android:textSize="10sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+                        app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
-                    <TextView
-                        android:id="@+id/textView10"
+                    <Button
+                        android:id="@+id/btnExAdd"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="6dp"
-                        android:layout_marginTop="16dp"
-                        android:text="Pet Level (High):"
+                        android:text="Add"
                         android:textColor="#FFFFFF"
-                        android:textColorHighlight="#FFFFFF"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/etPetLow" />
-
-                    <EditText
-                        android:id="@+id/etPetHi"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="6dp"
-                        android:layout_marginTop="8dp"
-                        android:ems="10"
-                        android:hint="100"
-                        android:inputType="textPersonName"
-                        android:textColor="#FFFFFF"
-                        android:textColorHighlight="#FFFFFF"
-                        android:textSize="10sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -275,7 +259,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="350dp"
                 android:layout_marginTop="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -314,7 +298,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="TextView"
+                        android:text="Categories"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/tvRarity"
@@ -322,7 +306,7 @@
 
                     <CheckBox
                         android:id="@+id/cbCommon"
-                        android:layout_width="100dp"
+                        android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Common"
@@ -332,7 +316,7 @@
 
                     <CheckBox
                         android:id="@+id/cbVerySpecial"
-                        android:layout_width="100dp"
+                        android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
@@ -343,7 +327,7 @@
 
                     <CheckBox
                         android:id="@+id/cbLegendary"
-                        android:layout_width="100dp"
+                        android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Legendary"
@@ -353,7 +337,7 @@
 
                     <CheckBox
                         android:id="@+id/cbSpecial"
-                        android:layout_width="100dp"
+                        android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
@@ -364,7 +348,7 @@
 
                     <CheckBox
                         android:id="@+id/cbSupreme"
-                        android:layout_width="100dp"
+                        android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
@@ -375,7 +359,7 @@
 
                     <CheckBox
                         android:id="@+id/cbMythic"
-                        android:layout_width="100dp"
+                        android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
@@ -386,7 +370,7 @@
 
                     <CheckBox
                         android:id="@+id/cbRare"
-                        android:layout_width="100dp"
+                        android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Rare"
@@ -396,7 +380,7 @@
 
                     <CheckBox
                         android:id="@+id/cbEpic"
-                        android:layout_width="100dp"
+                        android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Epic"
@@ -406,13 +390,156 @@
 
                     <CheckBox
                         android:id="@+id/cbUncommon"
-                        android:layout_width="100dp"
+                        android:layout_width="90dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Uncommon"
                         android:textSize="10sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/cbCommon" />
+
+                    <CheckBox
+                        android:id="@+id/cbConsumable"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Consumable"
+                        android:textSize="10sp"
+                        app:layout_constraintEnd_toStartOf="@+id/cbMisc"
+                        app:layout_constraintTop_toBottomOf="@+id/cbAccessories" />
+
+                    <CheckBox
+                        android:id="@+id/cbMisc"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Tools and Misc."
+                        android:textSize="10sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/cbBlocks" />
+
+                    <CheckBox
+                        android:id="@+id/cbAccessories"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Accessories"
+                        android:textSize="10sp"
+                        app:layout_constraintEnd_toStartOf="@+id/cbBlocks"
+                        app:layout_constraintTop_toBottomOf="@+id/cbWeapon" />
+
+                    <CheckBox
+                        android:id="@+id/cbWeapon"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Weapon"
+                        android:textSize="10sp"
+                        app:layout_constraintEnd_toStartOf="@+id/cbBlocks"
+                        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+                    <CheckBox
+                        android:id="@+id/cbBlocks"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Blocks"
+                        android:textSize="10sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/cbArmor" />
+
+                    <CheckBox
+                        android:id="@+id/cbArmor"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Armor"
+                        android:textSize="10sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+                    <TextView
+                        android:id="@+id/textView12"
+                        android:layout_width="wrap_content"
+                        android:layout_height="15dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="106dp"
+                        android:text="Pets"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/cbConsumable" />
+
+                    <CheckBox
+                        android:id="@+id/cbPets"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Show Only Pets"
+                        app:layout_constraintTop_toBottomOf="@+id/textView12"
+                        tools:layout_editor_absoluteX="254dp" />
+
+                    <EditText
+                        android:id="@+id/etPetHi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:ems="10"
+                        android:hint="100"
+                        android:inputType="textPersonName"
+                        android:textColor="#FFFFFF"
+                        android:textColorHighlight="#FFFFFF"
+                        android:textSize="10sp"
+                        android:visibility="invisible"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/etPetLo" />
+
+                    <EditText
+                        android:id="@+id/etPetLo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:ems="10"
+                        android:hint="0"
+                        android:inputType="textPersonName"
+                        android:textColor="#FFFFFF"
+                        android:textColorHighlight="#FFFFFF"
+                        android:textSize="10sp"
+                        android:visibility="invisible"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/cbPets" />
+
+                    <TextView
+                        android:id="@+id/tvPetHi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="Pet Level (Low):"
+                        android:textColor="#FFFFFF"
+                        android:textColorHighlight="#FFFFFF"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/etPetHi"
+                        app:layout_constraintTop_toBottomOf="@+id/etPetLo" />
+
+                    <TextView
+                        android:id="@+id/tvPetLo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Pet Level (High):"
+                        android:textColor="#FFFFFF"
+                        android:textColorHighlight="#FFFFFF"
+                        android:visibility="invisible"
+                        app:layout_constraintEnd_toStartOf="@+id/etPetLo"
+                        app:layout_constraintTop_toBottomOf="@+id/cbPets" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
@@ -421,11 +548,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
                 android:background="#03F4E0"
                 android:text="Apply all"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/btnClear"
+                app:layout_constraintStart_toEndOf="@+id/btnAddAll"
                 app:layout_constraintTop_toBottomOf="@+id/cardView3" />
 
             <Button
@@ -433,10 +562,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
                 android:text="Clear All"
-                app:layout_constraintEnd_toStartOf="@+id/btnApply"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnAddAll"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView3" />
+
+            <Button
+                android:id="@+id/btnAddAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:text="Add all"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnApply"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/btnClear"
                 app:layout_constraintTop_toBottomOf="@+id/cardView3" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

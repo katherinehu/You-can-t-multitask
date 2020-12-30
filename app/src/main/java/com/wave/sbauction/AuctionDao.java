@@ -4,8 +4,11 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.RawQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import java.util.List;
+import java.util.Objects;
 
 @Dao
 public interface AuctionDao {
@@ -16,7 +19,9 @@ public interface AuctionDao {
     Auction getAnAuctionItem();
 
 
-    @Insert (onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(Auction...auctions) ;
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(Auction... auctions);
 
+    @RawQuery
+    List<Auction> runtimeQuery(SupportSQLiteQuery sortQuery);
 }

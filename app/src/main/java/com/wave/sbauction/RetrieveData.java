@@ -132,10 +132,14 @@ public class RetrieveData extends AppCompatActivity {
 
                         //check if there is a bin, if not, set to false;
                         boolean binFlag;
+                        Double highestBid;
                         try{
                             binFlag = currentAuction.getBoolean("bin");
+                            highestBid = currentAuction.getDouble("starting_bid");
+
                         }
                         catch(Exception invalidReq){
+                            highestBid = currentAuction.getDouble("highest_bid_amount");
                             binFlag = false;
                         }
 
@@ -154,7 +158,7 @@ public class RetrieveData extends AppCompatActivity {
                                         currentAuction.getString("tier"),
                                         currentAuction.getDouble("starting_bid"),
                                         currentAuction.getBoolean("claimed"),
-                                        currentAuction.getDouble("highest_bid_amount"),
+                                        highestBid,
                                         binFlag
                                         ));
                     }

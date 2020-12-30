@@ -21,19 +21,20 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/rednessCV"
+            android:id="@+id/itemCV"
             android:layout_width="160dp"
             android:layout_height="100dp"
             android:layout_margin="10dp"
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/darkgrey"
+            app:cardBackgroundColor="@color/accent"
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:elevation="20dp"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -43,8 +44,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="UV Info"
-                    android:textColor="#FFFFFF"
+                    android:text="ITEM NAME"
+                    android:textColor="@color/darkgrey"
                     android:textStyle="bold" />
 
                 <TextView
@@ -52,19 +53,17 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="Find how long you can stay in the sun for"
-                    android:textColor="@color/textgrey" />
+                    android:text="DESCRIPTION"
+                    android:textColor="@color/darkgrey" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <Button
+            android:id="@+id/btnHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="History" />
     </LinearLayout>
 
-    <androidx.gridlayout.widget.GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="125dp"
-        tools:layout_editor_absoluteY="234dp">
-
-    </androidx.gridlayout.widget.GridLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
